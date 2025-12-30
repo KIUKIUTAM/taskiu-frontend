@@ -1,11 +1,11 @@
-import { useGoogleLogin } from '@/components/auth/useGoogleLogin';
+import { useGoogleLogin } from '@/hooks/useGoogleLogin';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import LoginModal from '@/components/auth/LoginModal';
 
 const LoginModalButton: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { t } = useTranslation('common'); // 修正：這裡也需要 t
+  const { t } = useTranslation('common');
 
   const { login: googleLogin, isLoading: isGoogleLoading } = useGoogleLogin();
 

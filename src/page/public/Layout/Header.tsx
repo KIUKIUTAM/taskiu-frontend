@@ -1,10 +1,11 @@
 // Header.tsx
 import React, { useState, useEffect } from 'react';
-import LoginButton from '@/components/LoginModalButton';
+// import LoginButton from '@/components/LoginModalButton'; // ❌ 不需要這個了，除非它只有樣式
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import LanguageChangeButton from '@/components/languageChangeButton';
 import { Button } from '@/components/ui/Button';
+import { useGoogleLogin } from '@/hooks/useGoogleLogin'; // ✅ 引入 Hook
 
 const Header: React.FC = () => {
   type Locale = 'en' | 'tw';
@@ -14,23 +15,35 @@ const Header: React.FC = () => {
   const navigate = useNavigate();
   const accessToken = localStorage.getItem('accessToken') as string | null;
 
+  // ✅ 1. 在這裡呼叫 Hook，確保整個 Header 只會建立這一個監聽器
+  const { login: handleGoogleLogin } = useGoogleLogin();
+
   // Handle scroll to change header style
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(globalThis.scrollY > 20);
+      setIsScrolled(window.scrollY > 20);
     };
 
-    globalThis.addEventListener('scroll', handleScroll);
-    return () => globalThis.removeEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Navigation items
   const navItems = [
     { label: t('home'), href: '' },
     { label: t('services'), href: 'services' },
     { label: t('aboutUs'), href: 'about' },
     { label: t('contact'), href: 'contact' },
   ];
+
+  // 封裝一個共用的登入按鈕 UI，避免重複寫 Code
+  const LoginActionBtn = () => (
+    <Button
+      onClick={handleGoogleLogin}
+      variant="primary" // 假設你的 Button 有這個 prop，請依實際情況調整
+    >
+      {t('login')}
+    </Button>
+  );
 
   return (
     <header
@@ -68,11 +81,9 @@ const Header: React.FC = () => {
           {/* Action Buttons - Desktop */}
           <div className="hidden lg:flex items-center gap-3">
             {accessToken ? (
-              // if logged in (user exists)
               <Button onClick={() => navigate('/dashboard')}>{t('startUsing')}</Button>
             ) : (
-              // if not logged in
-              <LoginButton />
+              <LoginActionBtn />
             )}
             <LanguageChangeButton />
           </div>
@@ -85,6 +96,7 @@ const Header: React.FC = () => {
               className="p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200"
               aria-label="Toggle menu"
             >
+              {/* ... Hamburger Icon ... */}
               <div
                 className={`w-6 flex flex-col justify-between ${isMobileMenuOpen ? 'h-2.5' : 'h-4'}`}
               >
@@ -130,11 +142,9 @@ const Header: React.FC = () => {
           {/* Mobile Action Buttons */}
           <div className="pt-4 space-y-3 justify-center flex">
             {accessToken ? (
-              // if logged in (user exists)
               <Button onClick={() => navigate('/dashboard')}>{t('startUsing')}</Button>
             ) : (
-              // if not logged in
-              <LoginButton />
+              <LoginActionBtn />
             )}
           </div>
         </div>

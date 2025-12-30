@@ -27,5 +27,6 @@
   "team": "Team",
   "careers": "Careers",
   "blog": "Blog",
-  "startUsing": "Start"
+  "startUsing": "Start",
+  "loginFailedPleaseTryAgain": "Login failed, please try again"
 }

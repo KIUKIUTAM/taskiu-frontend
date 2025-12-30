@@ -27,5 +27,7 @@
   "team": "團隊",
   "careers": "職涯",
   "blog": "部落格",
-  "startUsing": "開始使用"
+  "startUsing": "開始使用",
+  "loginFailedPleaseTryAgain": "登入失敗，請重試",
+  "verifierNotFoundPleaseTryAgain": "verifier code未找到,請重試"
 }
