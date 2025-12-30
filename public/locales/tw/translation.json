@@ -1,0 +1,5 @@
+{
+  "welcome": "歡迎來到 React",
+  "description": "這是一個簡單的 i18n 教學。",
+  "change_lang": "切換語言"
+}
