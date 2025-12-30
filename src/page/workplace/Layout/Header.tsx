@@ -5,8 +5,7 @@ import { useTranslation } from 'react-i18next';
 import LanguageChangeButton from '@/components/languageChangeButton';
 import { useLogout } from '@/hooks/useLogout';
 import { useQuery } from '@tanstack/react-query';
-import { userApi } from '@/api/User/userApi';
-import { useUserStore } from '@/stores/userStore';
+import { useAuth } from '@/hooks/useAuth';
 
 // FIX: Updated type definition to accept 'HTMLElement | null'
 function useOnClickOutside<T extends HTMLElement>(
@@ -37,6 +36,7 @@ const Header: React.FC = () => {
   const { mutate: logout } = useLogout();
   // Ref is initialized with null, which matches the hook's new signature
   const userMenuRef = useRef<HTMLDivElement>(null);
+  const { data: user, isLoading, isError } = useAuth();
 
   const { t } = useTranslation('common');
   const navigate = useNavigate();
@@ -57,13 +57,6 @@ const Header: React.FC = () => {
     { label: t('missions'), href: '/dashboard/missions' },
     { label: t('team'), href: '/dashboard/team' },
   ];
-
-  // Mock user data
-  const user = {
-    name: 'John Doe',
-    email: 'john@example.com',
-    avatarUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Felix',
-  };
 
   return (
     <header
@@ -113,7 +106,7 @@ const Header: React.FC = () => {
               >
                 <div className="w-10 h-10 rounded-full border-2 border-gray-200 overflow-hidden hover:border-blue-500 transition-colors cursor-pointer">
                   <img
-                    src={user.avatarUrl}
+                    src={user.picture}
                     alt="User Avatar"
                     className="w-full h-full object-cover"
                   />

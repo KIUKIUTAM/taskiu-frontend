@@ -9,7 +9,7 @@ import queryClient from '@/api/queryClient';
 
 const router = createBrowserRouter(routes);
 
-createRoot(document.getElementById('root')).render(
+createRoot(document.getElementById('root')!).render(
   <QueryChientProvider client={queryClient}>
     <RouterProvider router={router}></RouterProvider>
     <ReactQueryDevtools initialIsOpen={false} />

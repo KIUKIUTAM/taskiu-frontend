@@ -1,11 +1,10 @@
 // Header.tsx
 import React, { useState, useEffect } from 'react';
-import LoginModalButton from '@/components/loginModal';
+import LoginButton from '@/components/LoginModalButton';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import LanguageChangeButton from '@/components/languageChangeButton';
 import { Button } from '@/components/ui/Button';
-import { useAuth } from '@/hooks/useAuth';
 
 const Header: React.FC = () => {
   type Locale = 'en' | 'tw';
@@ -13,8 +12,9 @@ const Header: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { t, i18n } = useTranslation('common');
   const navigate = useNavigate();
-  const { data: user } = useAuth(); // 假設 useAuth 回傳 { data: user }
+  const accessToken = localStorage.getItem('accessToken') as string | null;
 
+  // Handle scroll to change header style
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(globalThis.scrollY > 20);
@@ -24,6 +24,7 @@ const Header: React.FC = () => {
     return () => globalThis.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Navigation items
   const navItems = [
     { label: t('home'), href: '' },
     { label: t('services'), href: 'services' },
@@ -66,12 +67,12 @@ const Header: React.FC = () => {
 
           {/* Action Buttons - Desktop */}
           <div className="hidden lg:flex items-center gap-3">
-            {user ? (
-              // 如果已登入 (user 存在)
+            {accessToken ? (
+              // if logged in (user exists)
               <Button onClick={() => navigate('/dashboard')}>{t('startUsing')}</Button>
             ) : (
-              // 如果未登入
-              <LoginModalButton />
+              // if not logged in
+              <LoginButton />
             )}
             <LanguageChangeButton />
           </div>
@@ -128,12 +129,12 @@ const Header: React.FC = () => {
 
           {/* Mobile Action Buttons */}
           <div className="pt-4 space-y-3 justify-center flex">
-            {user ? (
-              // 如果已登入 (user 存在)
+            {accessToken ? (
+              // if logged in (user exists)
               <Button onClick={() => navigate('/dashboard')}>{t('startUsing')}</Button>
             ) : (
-              // 如果未登入
-              <LoginModalButton />
+              // if not logged in
+              <LoginButton />
             )}
           </div>
         </div>

@@ -12,7 +12,7 @@ import NotFound from '@/page/public/NotFount/index';
 
 import TransitionComparison from '@/page/Test/index.jsx';
 import TodoList from '@/page/Test/tailwindcss';
-import { CallbackPage } from '@/features/auth2/Callback';
+import { CallbackPage } from '@/components/auth/Callback';
 import { AuthGuard } from '@/components/AuthGuard';
 
 const routes = [

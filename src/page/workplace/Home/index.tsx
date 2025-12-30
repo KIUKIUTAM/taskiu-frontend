@@ -1,5 +1,4 @@
 import React, { useEffect, useRef } from 'react';
-import { userApi } from '@/api/User/userApi';
 
 const HomePage: React.FC = () => {
   return (

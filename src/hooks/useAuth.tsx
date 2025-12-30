@@ -1,6 +1,6 @@
 // hooks/useAuth.ts
 import { useQuery } from '@tanstack/react-query';
-import { userApi } from '@/api/User/userApi'; // 假設這是你的 api 檔案
+import { userApi } from '@/api/User/userApi';
 
 export const useAuth = () => {
   return useQuery({

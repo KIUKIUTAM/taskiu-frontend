@@ -10,11 +10,10 @@ export const useLogout = () => {
   return useMutation({
     mutationFn: async () => {
       await authApi.logout();
-      localStorage.removeItem('accessToken');
     },
     onSuccess: () => {
-      queryClient.setQueryData(['auth-user'], null);
-      // queryClient.removeQueries({ queryKey: ['auth-user'] });
+      localStorage.removeItem('accessToken');
+      queryClient.removeQueries({ queryKey: ['auth-user'] });
       navigate('/', { replace: true });
     },
   });

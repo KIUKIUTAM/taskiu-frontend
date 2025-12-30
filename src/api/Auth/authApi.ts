@@ -4,7 +4,7 @@ export const authApi = {
   loginWithGoogle: (code: string, verifier: string) =>
     publicClient.post('/auth/google', {
       code,
-      codeVerifier: verifier,
+      code_verifier: verifier,
     }),
   logout: () => privateClient.post('/auth/logout'),
 };

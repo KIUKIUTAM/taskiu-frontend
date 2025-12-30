@@ -9,7 +9,7 @@ export const AuthGuard = ({ children }: { children: React.ReactNode }) => {
   const { data: user, isLoading, isError } = useAuth();
 
   useEffect(() => {
-    if (isError) navigate('/', { replace: true }); // 或是你的登入頁路徑
+    if (isError) navigate('/', { replace: true });
   }, [isError, navigate]);
 
   if (isLoading)
