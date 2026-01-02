@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { useLoginForm } from '@/hooks/useLoginForm'; // 引入上面的 Hook
+import { useLoginForm } from '@/hooks/auth/useLoginForm'; // 引入上面的 Hook
 
 interface Props {
   onEmailLogin: (e: string, p: string) => void;

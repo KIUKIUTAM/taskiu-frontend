@@ -6,5 +6,10 @@ export const authApi = {
       code,
       code_verifier: verifier,
     }),
+  loginWithGitHub: (code: string, verifier: string) =>
+    publicClient.post('/auth/github', {
+      code,
+      code_verifier: verifier,
+    }),
   logout: () => privateClient.post('/auth/logout'),
 };

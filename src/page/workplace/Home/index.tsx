@@ -14,17 +14,6 @@ const HomePage: React.FC = () => {
           <h2 className="text-3xl font-bold text-gray-900 mb-4">Welcome Back!</h2>
           <p className="text-gray-600 text-lg">Start your learning journey today.</p>
         </section>
-        <section className="bg-white rounded-lg shadow p-8 mb-8">
-          <img
-            alt="User Avatar"
-            style={{
-              width: '50px',
-              borderRadius: '50%',
-            }}
-            referrerPolicy="no-referrer"
-          />
-          {}
-        </section>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="bg-white rounded-lg shadow p-6">

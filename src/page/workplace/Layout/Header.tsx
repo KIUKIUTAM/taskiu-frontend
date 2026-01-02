@@ -3,9 +3,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import LanguageChangeButton from '@/components/languageChangeButton';
-import { useLogout } from '@/hooks/useLogout';
+import { useLogout } from '@/hooks/auth/useLogout';
 import { useQuery } from '@tanstack/react-query';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/hooks/auth/useAuth';
 
 // FIX: Updated type definition to accept 'HTMLElement | null'
 function useOnClickOutside<T extends HTMLElement>(
@@ -105,11 +105,13 @@ const Header: React.FC = () => {
                 className="flex items-center gap-2 focus:outline-hidden transition-transform active:scale-95"
               >
                 <div className="w-10 h-10 rounded-full border-2 border-gray-200 overflow-hidden hover:border-blue-500 transition-colors cursor-pointer">
-                  <img
-                    src={user.picture}
-                    alt="User Avatar"
-                    className="w-full h-full object-cover"
-                  />
+                  {user?.picture && (
+                    <img
+                      src={user.picture}
+                      alt="User Avatar"
+                      className="w-full h-full object-cover"
+                    />
+                  )}
                 </div>
               </button>
 
@@ -117,8 +119,12 @@ const Header: React.FC = () => {
               {isUserMenuOpen && (
                 <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg py-1 ring-1 ring-black/5 transform origin-top-right transition-all duration-200 z-50">
                   <div className="px-4 py-3 border-b border-gray-100">
-                    <p className="text-sm font-semibold text-gray-900 truncate">{user.name}</p>
-                    <p className="text-xs text-gray-500 truncate">{user.email}</p>
+                    {user?.name && (
+                      <p className="text-sm font-semibold text-gray-900 truncate">{user.name}</p>
+                    )}
+                    {user?.email && (
+                      <p className="text-sm font-semibold text-gray-900 truncate">{user.email}</p>
+                    )}
                   </div>
 
                   <div className="py-1">
@@ -210,10 +216,12 @@ const Header: React.FC = () => {
           {/* Mobile Action Buttons */}
           <div className="pt-4 border-t border-gray-100 mt-2">
             <div className="flex items-center px-4 py-3 mb-2">
-              <img className="h-8 w-8 rounded-full mr-3" src={user.avatarUrl} alt="" />
+              {user?.picture && (
+                <img className="h-8 w-8 rounded-full mr-3" src={user.picture} alt="" />
+              )}
               <div>
-                <div className="text-sm font-medium text-gray-800">{user.name}</div>
-                <div className="text-xs text-gray-500">{user.email}</div>
+                {user?.name && <div className="text-sm font-medium text-gray-800">{user.name}</div>}
+                {user?.email && <div className="text-xs text-gray-500">{user.email}</div>}
               </div>
             </div>
             <button

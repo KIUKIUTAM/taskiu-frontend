@@ -1,7 +1,6 @@
 // src/store.ts
 import { create } from 'zustand';
 
-// 定義型別 (如果你用 TypeScript)
 interface UserState {
   userId: string | null;
   email: string | null;

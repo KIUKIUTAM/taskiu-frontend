@@ -1,10 +1,10 @@
 import axios from 'axios';
 
 // 基礎設定
-const BASE_URL = '/api'; // 配合你的 Vite Proxy
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 // =================================================================
-// 1. Public Client (公開用：登入、註冊、刷新 Token 本身)
+// 1. Public Client (for public: login, register, refresh token itself)
 // =================================================================
 export const publicClient = axios.create({
   baseURL: BASE_URL,
@@ -12,18 +12,18 @@ export const publicClient = axios.create({
 });
 
 // =================================================================
-// 2. Private Client (私有用：需要 Access Token 的所有請求)
+// 2. Private Client (for private: all requests that need Access Token)
 // =================================================================
 export const privateClient = axios.create({
   baseURL: BASE_URL,
   headers: { 'Content-Type': 'application/json' },
-  withCredentials: true, // 如果你的 Refresh Token 存是 HttpOnly Cookie，這行很重要
+  withCredentials: true, // If your Refresh Token is stored in an HttpOnly Cookie, this line is very important
 });
 
-// [Request Interceptor]：自動把 Access Token 塞進 Header
+// [Request Interceptor]: Automatically add Access Token to Header
 privateClient.interceptors.request.use(
   (config) => {
-    // 從 LocalStorage 或 Store 取出 Token
+    // Get Token from LocalStorage or Store
     const token = localStorage.getItem('accessToken');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -33,35 +33,35 @@ privateClient.interceptors.request.use(
   (error) => Promise.reject(error),
 );
 
-// [Response Interceptor]：處理 Token 過期 (401)
+// [Response Interceptor]: Handle Token Expiration (401)
 privateClient.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
 
-    // 如果遇到 401 錯誤，且這個請求還沒重試過
+    // If you encounter a 401 error and this request has not been retried yet
     if (error.response?.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true; // 標記為已重試，避免無窮迴圈
+      originalRequest._retry = true; // Mark as retried to avoid infinite loop
 
       try {
-        // 1. 呼叫 Refresh Token API (這通常是用 publicClient 或直接 axios)
-        // 假設你的 refresh token 存在 cookie 裡，後端會自己讀
+        // 1. Call Refresh Token API (usually using publicClient or directly axios)
+        // If your refresh token is stored in a cookie, the backend will read it automatically
         const { data } = await publicClient.post('/auth/refresh-token');
 
-        // 2. 拿到新的 Access Token，存起來
+        // 2. Get the new Access Token and save it
         const newAccessToken = data.accessToken;
         localStorage.setItem('accessToken', newAccessToken);
 
-        // 3. 更新原本請求的 Header
+        // 3. Update the original request's Header
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
 
-        // 4. 重送原本失敗的請求
+        // 4. Retry the original failed request
         return privateClient(originalRequest);
       } catch (refreshError) {
-        // Refresh 也失敗了 (代表 Refresh Token 也過期或無效)
+        // Refresh also failed (meaning Refresh Token is expired or invalid)
         console.error('Refresh token failed', refreshError);
 
-        // 清除資料並強制登出
+        // Clear data and force logout
         localStorage.removeItem('accessToken');
         //window.location.href = '/';
 

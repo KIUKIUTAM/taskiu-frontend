@@ -10,9 +10,10 @@ import MissionsPage from '@/page/workplace/Missions/index';
 
 import NotFound from '@/page/public/NotFount/index';
 
-import TransitionComparison from '@/page/Test/index.jsx';
+import Test from '@/page/Test/index.jsx';
 import TodoList from '@/page/Test/tailwindcss';
-import { CallbackPage } from '@/components/auth/Callback';
+import { GoogleCallbackPage } from '@/components/auth/google/GoogleCallback';
+import { GitHubCallbackPage } from '@/components/auth/github/GitHubCallback';
 import { AuthGuard } from '@/components/AuthGuard';
 
 const routes = [
@@ -66,11 +67,15 @@ const routes = [
   },
   {
     path: 'test',
-    element: <TransitionComparison />,
+    element: <Test />,
   },
   {
-    path: 'callback',
-    element: <CallbackPage />,
+    path: 'auth/google-callback',
+    element: <GoogleCallbackPage />,
+  },
+  {
+    path: 'auth/github-callback',
+    element: <GitHubCallbackPage />,
   },
   {
     path: 'todos',

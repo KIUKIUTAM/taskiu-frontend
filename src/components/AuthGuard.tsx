@@ -1,7 +1,7 @@
 // src/components/AuthGuard.tsx
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '@/hooks/useAuth'; // 你的 React Query hook
+import { useAuth } from '@/hooks/auth/useAuth'; // 你的 React Query hook
 import { Loader2 } from 'lucide-react';
 
 export const AuthGuard = ({ children }: { children: React.ReactNode }) => {

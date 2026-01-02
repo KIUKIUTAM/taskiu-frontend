@@ -9,8 +9,9 @@ interface LoginModalProps {
   onClose: () => void;
   onEmailLogin: (email: string, password: string) => void;
   onGoogleLogin?: () => void;
-  onAppleLogin?: () => void;
+  onGitHubLogin?: () => void;
   isGoogleLoading?: boolean;
+  isGitHubLoading?: boolean;
 }
 
 const LoginModal: React.FC<LoginModalProps> = ({
@@ -18,8 +19,9 @@ const LoginModal: React.FC<LoginModalProps> = ({
   onClose,
   onEmailLogin,
   onGoogleLogin,
-  onAppleLogin,
+  onGitHubLogin,
   isGoogleLoading,
+  isGitHubLoading,
 }) => {
   const { t } = useTranslation('common');
 
@@ -61,8 +63,9 @@ const LoginModal: React.FC<LoginModalProps> = ({
         {/* 1. Social login section */}
         <SocialLoginSection
           onGoogleLogin={onGoogleLogin}
-          onAppleLogin={onAppleLogin}
+          onGitHubLogin={onGitHubLogin}
           isGoogleLoading={isGoogleLoading}
+          isGitHubLoading={isGitHubLoading}
         />
 
         {/* 2. Email form section */}

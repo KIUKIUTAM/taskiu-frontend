@@ -1,18 +1,21 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import GoogleIcon from '@/assets/svg/googleIcon';
-import AppleIcon from '@/assets/svg/appleIcon';
+import GoogleIcon from '@/assets/svg/GoogleIcon';
+import GitHubIcon from '@/assets/svg/GitHubicon';
+import { Loader } from 'lucide-react';
 
 interface Props {
   onGoogleLogin?: () => void;
-  onAppleLogin?: () => void;
+  onGitHubLogin?: () => void;
   isGoogleLoading?: boolean;
+  isGitHubLoading?: boolean;
 }
 
 export const SocialLoginSection: React.FC<Props> = ({
   onGoogleLogin,
-  onAppleLogin,
+  onGitHubLogin,
   isGoogleLoading,
+  isGitHubLoading,
 }) => {
   const { t } = useTranslation('common');
 
@@ -27,21 +30,19 @@ export const SocialLoginSection: React.FC<Props> = ({
             isGoogleLoading ? 'bg-gray-100 cursor-not-allowed' : 'hover:bg-gray-100'
           }`}
         >
-          {isGoogleLoading ? (
-            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-gray-900" />
-          ) : (
-            <GoogleIcon />
-          )}
+          {isGoogleLoading ? <Loader className="animate-spin" /> : <GoogleIcon />}
           {isGoogleLoading ? 'Logging in...' : t('continueWithGoogle')}
         </button>
-
         <button
           type="button"
-          onClick={onAppleLogin}
-          className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-black text-white rounded-lg hover:shadow-xl transition-colors font-medium"
+          onClick={onGitHubLogin}
+          disabled={isGitHubLoading}
+          className={`w-full flex items-center justify-center gap-3 px-4 py-3 border border-gray-300 rounded-lg transition-colors font-medium text-gray-700 ${
+            isGitHubLoading ? 'bg-gray-100 cursor-not-allowed' : 'hover:bg-gray-100'
+          }`}
         >
-          <AppleIcon />
-          {t('continueWithApple')}
+          {isGitHubLoading ? <Loader className="animate-spin" /> : <GitHubIcon />}
+          {isGitHubLoading ? 'Logging in...' : t('continueWithGitHub')}
         </button>
       </div>
 

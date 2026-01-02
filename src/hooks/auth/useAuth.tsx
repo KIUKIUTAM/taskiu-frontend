@@ -7,10 +7,11 @@ export const useAuth = () => {
     queryKey: ['auth-user'],
     queryFn: async () => {
       const res = await userApi.getProfile();
+      if (!res) return null;
       return res.data;
     },
-    // 關鍵設定：
-    retry: false, // 失敗(401)不重試，直接噴錯
-    staleTime: 1000 * 60 * 5, // 5分鐘內不重新驗證 (看你需求)
+    // key setting：
+    retry: false, //disable retry on failure
+    staleTime: 1000 * 60 * 5, // 5 minutes without revalidation (adjust as needed)
   });
 };
