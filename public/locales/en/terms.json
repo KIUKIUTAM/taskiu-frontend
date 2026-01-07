@@ -1,0 +1,27 @@
+{
+    "title": "Terms and Conditions",
+    "lastUpdated": "Last updated: January 5, 2026",
+    "sections": [
+        {
+            "title": "1. Introduction",
+            "content": "Welcome to our service. These terms govern your rights and obligations when using this website and related services. By using this service, you agree to all the terms contained herein."
+        },
+        {
+            "title": "2. User Account and Security",
+            "content": "You are responsible for maintaining the confidentiality of your account password. Please notify us immediately of any unauthorized use. We will not be liable for any loss arising from your failure to comply with this section."
+        },
+        {
+            "title": "3. Privacy Policy",
+            "content": "We value your privacy. Please refer to our Privacy Policy page for information on how we collect, use, and disclose your personal information."
+        },
+        {
+            "title": "4. Modifications and Termination",
+            "content": "We reserve the right to modify, suspend, or terminate the service (or any part thereof) at any time without prior notice."
+        }
+    ],
+    "buttons": {
+        "back": "Go Back",
+        "agree": "I Agree and Continue"
+    },
+    "loadingError": "Unable to load terms content..."
+}

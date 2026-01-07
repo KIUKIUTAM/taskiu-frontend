@@ -1,5 +1,5 @@
 import { Outlet } from 'react-router-dom';
-import Header from '@/page/public/Layout/Header';
+import Header from '@/page/stateless/Layout/Header';
 
 const Layout: React.FC = () => {
   return (

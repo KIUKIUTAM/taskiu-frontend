@@ -1,5 +1,5 @@
 // src/hooks/useGitHubLogin.ts
-import { useEffect, useCallback, useRef, useState } from 'react'; // 引入 useState
+import { useEffect, useCallback, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { generateCodeVerifier, generateCodeChallenge } from '@/utils/cryptoLogic';
@@ -18,27 +18,27 @@ export const useGitHubLogin = () => {
   const { t } = useTranslation('common');
   const hasRun = useRef(false);
 
-  // 新增：用來追蹤是否正在進行 OAuth 流程 (包含彈出視窗的時間)
   const [isAuthorizing, setIsAuthorizing] = useState(false);
 
   const loginMutation = useMutation({
     mutationFn: async (code: string) => {
       const verifier = sessionStorage.getItem('code_verifier');
       if (!verifier) throw new Error('No code verifier found');
+      sessionStorage.removeItem('code_verifier');
       return await authApi.loginWithGitHub(code, verifier);
     },
     onSuccess: (data: any) => {
       localStorage.setItem('accessToken', data.data.accessToken);
       queryClient.invalidateQueries({ queryKey: ['auth-user'] });
       hasRun.current = false;
-      setIsAuthorizing(false); // 成功後關閉 loading
+      setIsAuthorizing(false);
       navigate('/dashboard');
     },
     onError: (error) => {
       console.error('Login Failed:', error);
       alert(t('loginFailedPleaseTryAgain'));
       hasRun.current = false;
-      setIsAuthorizing(false); // 失敗後關閉 loading
+      setIsAuthorizing(false);
     },
   });
 
@@ -92,7 +92,7 @@ export const useGitHubLogin = () => {
     const checkPopup = setInterval(() => {
       if (popup?.closed) {
         clearInterval(checkPopup);
-        // 如果視窗關閉了，且 mutation 還沒開始 (代表沒拿到 code)，則取消 loading
+
         if (!hasRun.current) {
           setIsAuthorizing(false);
         }

@@ -1,5 +1,5 @@
 // Header.tsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import LoginModal from '@/components/auth/LoginModal';
 
 import { useNavigate } from 'react-router-dom';
@@ -8,14 +8,15 @@ import { Button } from '@/components/ui/Button';
 import { useGoogleLogin } from '@/hooks/auth/google/useGoogleLogin';
 import { useTranslation } from 'react-i18next';
 import { useGitHubLogin } from '@/hooks/auth/github/useGitHubLogin';
+import { useEmailLogin } from '@/hooks/auth/useEmailLogin';
 
 const Header: React.FC = () => {
-  type Locale = 'en' | 'tw';
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { t } = useTranslation('common');
   const navigate = useNavigate();
-  const accessToken = localStorage.getItem('accessToken') as string | null;
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const accessToken = localStorage.getItem('accessToken');
 
   useEffect(() => {
     const handleScroll = () => {
@@ -36,24 +37,26 @@ const Header: React.FC = () => {
 
   const { login: gitHubLogin, isLoading: isGitHubLoading } = useGitHubLogin();
 
-  const handleGoogleLogin = () => {
+  const { login: emailLogin, isLoading: isEmailLoading } = useEmailLogin();
+
+  const handleGoogleLogin = useCallback(() => {
     googleLogin();
-  };
+  }, [googleLogin]);
 
-  const handleGitHubLogin = () => {
+  const handleGitHubLogin = useCallback(() => {
     gitHubLogin();
-  };
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  }, [gitHubLogin]);
 
-  const handleEmailLogin = (email: string, password: string) => {
-    console.log('Email login:', email, password);
-  };
-  //bug
-
+  const handleEmailLogin = useCallback(
+    ({ email, password }: { email: string; password: string }) => {
+      emailLogin({ email, password });
+    },
+    [emailLogin],
+  );
   return (
     <>
       <header
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        className={`sticky top-0 left-0 right-0 z-50 transition-all duration-300 ${
           isScrolled
             ? 'bg-white/98 shadow-xl backdrop-blur-md'
             : 'bg-white/95 shadow-md backdrop-blur-sm'
@@ -64,7 +67,10 @@ const Header: React.FC = () => {
             {/* Logo Section */}
             <div className="flex items-center cursor-pointer group">
               <div className="flex items-center gap-2">
-                <span className="text-2xl md:text-3xl font-bold text-blue-950 filter drop-shadow-lg">
+                <span
+                  className="text-2xl md:text-3xl font-bold text-blue-950 filter drop-shadow-lg"
+                  onClick={() => navigate('/')}
+                >
                   TasKiu
                 </span>
               </div>
@@ -74,7 +80,7 @@ const Header: React.FC = () => {
             <nav className="hidden lg:flex items-center space-x-1 ml-16">
               {navItems.map((item, index) => (
                 <button
-                  key={index}
+                  key={item.href}
                   onClick={() => navigate(item.href)}
                   className="relative px-4 py-2 text-gray-700 font-medium text-sm xl:text-base hover:text-blue-950 transition-colors duration-300 group"
                 >
@@ -90,7 +96,7 @@ const Header: React.FC = () => {
                 <Button onClick={() => navigate('/dashboard')}>{t('startUsing')}</Button>
               ) : (
                 <Button onClick={() => setIsModalOpen(true)} variant="primary">
-                  {t('signUp')}
+                  {t('signIn', { ns: 'common' })}
                 </Button>
               )}
               <LanguageChangeButton />
@@ -138,7 +144,7 @@ const Header: React.FC = () => {
           <div className="px-4 pt-2 pb-6 space-y-1 bg-white border-t border-gray-100">
             {navItems.map((item, index) => (
               <a
-                key={index}
+                key={item.href}
                 href={item.href}
                 onClick={() => setIsMobileMenuOpen(false)}
                 className="block px-4 py-3 text-gray-700 font-medium rounded-lg hover:bg-linear-to-r hover:from-purple-50 hover:to-pink-50 hover:text-purple-600 transition-all duration-200"
@@ -153,7 +159,7 @@ const Header: React.FC = () => {
                 <Button onClick={() => navigate('/dashboard')}>{t('startUsing')}</Button>
               ) : (
                 <Button onClick={() => setIsModalOpen(true)} variant="primary">
-                  {t('signUp')}
+                  {t('signIn', { ns: 'common' })}
                 </Button>
               )}
             </div>
@@ -165,6 +171,7 @@ const Header: React.FC = () => {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onEmailLogin={handleEmailLogin}
+        isEmailLoading={isEmailLoading}
         onGoogleLogin={handleGoogleLogin}
         isGoogleLoading={isGoogleLoading}
         onGitHubLogin={handleGitHubLogin}

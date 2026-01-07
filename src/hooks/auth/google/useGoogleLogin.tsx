@@ -18,13 +18,14 @@ export const useGoogleLogin = () => {
   const { t } = useTranslation('common');
   const hasRun = useRef(false);
 
+  //for the loading state
   const [isAuthorizing, setIsAuthorizing] = useState(false);
 
   const loginMutation = useMutation({
     mutationFn: async (code: string) => {
-      //todo remove the sessionStorage of code_verifier after login success
       const verifier = sessionStorage.getItem('code_verifier');
       if (!verifier) throw new Error('No code verifier found');
+      sessionStorage.removeItem('code_verifier');
       return await authApi.loginWithGoogle(code, verifier);
     },
     onSuccess: (data: any) => {
@@ -102,6 +103,6 @@ export const useGoogleLogin = () => {
 
   return {
     login: startGoogleLogin,
-    isLoading: loginMutation.isPending,
+    isLoading: isAuthorizing || loginMutation.isPending,
   };
 };

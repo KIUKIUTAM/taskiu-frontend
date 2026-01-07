@@ -18,8 +18,8 @@
   "forgotPassword": "Forgot password?",
   "signIn": "Sign In",
   "signUp": "Sign Up",
-  "rememberMe": "Remember me",
   "dontHaveAccount": "Don't have an account?",
+  "rememberMe": "Remember me",
   "orContinueWithEmail": "Or continue with email",
   "dashboard": "Dashboard",
   "missions": "Missions",
@@ -29,5 +29,8 @@
   "careers": "Careers",
   "blog": "Blog",
   "startUsing": "Start",
-  "loginFailedPleaseTryAgain": "Login failed, please try again"
+  "loading": "Loading",
+  "back": "Back",
+  "loginFailedPleaseTryAgain": "Login failed, please try again",
+  "verifierNotFoundPleaseTryAgain": "Verifier code not found, please try again"
 }

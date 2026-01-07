@@ -7,9 +7,10 @@ import { EmailLoginForm } from './EmailLoginForm';
 interface LoginModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onEmailLogin: (email: string, password: string) => void;
+  onEmailLogin: ({ email, password }: { email: string; password: string }) => void;
   onGoogleLogin?: () => void;
   onGitHubLogin?: () => void;
+  isEmailLoading?: boolean;
   isGoogleLoading?: boolean;
   isGitHubLoading?: boolean;
 }
@@ -20,6 +21,7 @@ const LoginModal: React.FC<LoginModalProps> = ({
   onEmailLogin,
   onGoogleLogin,
   onGitHubLogin,
+  isEmailLoading,
   isGoogleLoading,
   isGitHubLoading,
 }) => {
@@ -69,15 +71,9 @@ const LoginModal: React.FC<LoginModalProps> = ({
         />
 
         {/* 2. Email form section */}
-        <EmailLoginForm onEmailLogin={onEmailLogin} />
+        <EmailLoginForm onEmailLogin={onEmailLogin} isEmailLoading={isEmailLoading} />
 
         {/* bottom links */}
-        <p className="mt-6 text-center text-sm text-gray-600">
-          {t('dontHaveAccount')}{' '}
-          <a href="#" className="text-blue-600 hover:text-blue-700 font-medium">
-            {t('signUp')}
-          </a>
-        </p>
       </div>
     </div>
   );
