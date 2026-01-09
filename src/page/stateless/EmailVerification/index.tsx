@@ -1,48 +1,48 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Mail, ArrowRight, Loader2, CheckCircle2, RotateCcw } from 'lucide-react';
+import { Mail, ArrowRight, Loader2, CheckCircle2, Send } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { useEmailSend } from '@/hooks/auth/useEmailSend';
+import { useEmailVerify } from '@/hooks/auth/useEmailVerify';
+import { useAuth } from '@/hooks/auth/useAuth';
 
 const EmailVerification = () => {
   const [otp, setOtp] = useState<string[]>(new Array(6).fill(''));
-  const [isLoading, setIsLoading] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const { t } = useTranslation('common');
+
+  const { data: user } = useAuth();
+  const { sendVerifyEmail, isSending } = useEmailSend();
+  const { verifyEmail, isVerifying, isVerifySuccess } = useEmailVerify();
+
+  const [timer, setTimer] = useState(0);
 
   // Handle input change
   const handleChange = (element: HTMLInputElement, index: number) => {
     const value = element.value;
-
-    // Only allow numbers
     if (Number.isNaN(Number(value))) return;
 
     const newOtp = [...otp];
-    // Take the last entered character (handle some browsers autofilling multiple characters)
     newOtp[index] = value.substring(value.length - 1);
     setOtp(newOtp);
 
-    // If a value is entered and it's not the last box, focus the next box
     if (value && index < 5) {
       inputRefs.current[index + 1]?.focus();
     }
   };
 
-  // Handle key events (Backspace, Arrow keys)
+  // Handle key events
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, index: number) => {
     if (e.key === 'Backspace') {
       if (!otp[index] && index > 0) {
-        // If the current box is empty, press Backspace to go back to the previous box
         inputRefs.current[index - 1]?.focus();
       }
     }
   };
 
-  // handle paste event
+  // Handle paste event
   const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
     e.preventDefault();
     const pastedData = e.clipboardData.getData('text').slice(0, 6);
-
-    // Check if all characters are digits
     if (!/^\d+$/.test(pastedData)) return;
 
     const newOtp = [...otp];
@@ -51,30 +51,24 @@ const EmailVerification = () => {
     });
     setOtp(newOtp);
 
-    // Focus on the last empty input or the last input
     const nextEmptyIndex = newOtp.findIndex((val) => val === '');
     const focusIndex = nextEmptyIndex === -1 ? 5 : nextEmptyIndex;
     inputRefs.current[focusIndex]?.focus();
   };
 
-  // todo
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
-
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false);
-      setIsSuccess(true);
-    }, 2000);
+    const verifyCode = otp.join('');
+    verifyEmail(verifyCode);
   };
 
-  // Resend timer (simulate)
-  const [timer, setTimer] = useState(0);
-  const handleResend = () => {
+  const handleSendCode = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (timer > 0 || isSending) return;
+
     setTimer(60);
-    // Add actual resend logic here
-    console.log('Resending code...');
+    sendVerifyEmail();
+    console.log('Sending code...');
   };
 
   useEffect(() => {
@@ -87,32 +81,61 @@ const EmailVerification = () => {
     return () => clearInterval(interval);
   }, [timer]);
 
+  // Refactor 1: Extract nested ternary into an independent statement/function
+  const renderResendContent = () => {
+    if (isSending) {
+      return <Loader2 className="w-4 h-4 animate-spin" />;
+    }
+
+    if (timer > 0) {
+      return <span>{timer}s</span>;
+    }
+
+    return (
+      <>
+        <Send className="w-3 h-3" />
+        {t('resend')}
+      </>
+    );
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4 font-sans text-gray-900">
       <div className="max-w-md w-full bg-white rounded-2xl shadow-xl overflow-hidden">
         <div className="p-8">
-          {/* Icon and Title */}
+          {/* Header Section */}
           <div className="text-center mb-8">
             <div className="mx-auto w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
-              {isSuccess ? (
+              {isVerifySuccess ? (
                 <CheckCircle2 className="w-8 h-8 text-green-600" />
               ) : (
                 <Mail className="w-8 h-8 text-blue-600" />
               )}
             </div>
             <h2 className="text-2xl font-bold mb-2">
-              {isSuccess ? t('verifysuccess') : t('verifyEmail')}
+              {isVerifySuccess
+                ? t('verifysuccess', { ns: 'auth' })
+                : t('verifyEmail', { ns: 'auth' })}
             </h2>
             <p className="text-gray-500 text-sm">
-              {isSuccess
-                ? t('youCanNowCloseThisPageOrContinue')
-                : t('weHaveSentA6DigitVerificationCode')}
+              {isVerifySuccess
+                ? t('youCanNowCloseThisPageOrContinue', { ns: 'auth' })
+                : t('weHaveSentA6DigitVerificationCode', {
+                    email: user?.email || 'your email',
+                    ns: 'auth',
+                  })}
             </p>
           </div>
 
-          {!isSuccess ? (
+          {/* Refactor 2: Fix negated condition (!isVerifySuccess) by swapping blocks */}
+          {isVerifySuccess ? (
+            <div className="text-center">
+              <button className="w-full bg-gray-900 text-white font-semibold py-3 px-4 rounded-xl hover:bg-gray-800 transition-colors">
+                {t('goToDashboard')}
+              </button>
+            </div>
+          ) : (
             <form onSubmit={handleSubmit}>
-              {/* 6 input fields */}
               <div className="flex justify-between gap-2 mb-8">
                 {otp.map((data, index) => (
                   <input
@@ -132,13 +155,12 @@ const EmailVerification = () => {
                 ))}
               </div>
 
-              {/* Button */}
               <button
                 type="submit"
-                disabled={otp.join('').length < 6 || isLoading}
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                disabled={otp.join('').length < 6 || isVerifying}
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mb-6"
               >
-                {isLoading ? (
+                {isVerifying ? (
                   <>
                     <Loader2 className="w-5 h-5 animate-spin" />
                     {t('verifying')}
@@ -150,35 +172,30 @@ const EmailVerification = () => {
                   </>
                 )}
               </button>
-            </form>
-          ) : (
-            <div className="text-center">
-              <button className="w-full bg-gray-900 text-white font-semibold py-3 px-4 rounded-xl hover:bg-gray-800 transition-colors">
-                {t('goToDashboard')}
-              </button>
-            </div>
-          )}
 
-          {/* Resend Link */}
-          {!isSuccess && (
-            <div className="mt-6 text-center text-sm">
-              <p className="text-gray-500">
-                {t('didNotReceiveVerificationCode')}{' '}
-                {timer > 0 ? (
-                  <span className="text-gray-400 font-medium">
-                    {timer} {t('secondsBeforeResend')}
-                  </span>
-                ) : (
-                  <button
-                    onClick={handleResend}
-                    className="text-blue-600 font-semibold hover:text-blue-700 hover:underline flex items-center justify-center gap-1 mx-auto"
-                  >
-                    <RotateCcw className="w-3 h-3" />
-                    {t('resend')}
-                  </button>
-                )}
-              </p>
-            </div>
+              <div className="flex items-center justify-between bg-gray-50 p-4 rounded-xl border border-gray-100">
+                <span className="text-sm text-gray-500 font-medium">
+                  {t('didNotReceiveVerificationCode', { ns: 'auth' })}
+                </span>
+
+                <button
+                  type="button"
+                  onClick={handleSendCode}
+                  disabled={timer > 0 || isSending}
+                  className={`
+                    flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all
+                    ${
+                      timer > 0
+                        ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                        : 'bg-white text-blue-600 border border-blue-200 hover:bg-blue-50 hover:border-blue-300 shadow-sm'
+                    }
+                  `}
+                >
+                  {/* Using the extracted function here */}
+                  {renderResendContent()}
+                </button>
+              </div>
+            </form>
           )}
         </div>
       </div>

@@ -4,5 +4,7 @@
     "loginFailedPleaseTryAgain": "登入失敗，請重試。",
     "registerFailedPleaseTryAgain": "註冊失敗，請重試。",
     "verifierNotFoundPleaseTryAgain": "找不到驗證碼，請重試。",
-    "verifyFailedPleaseTryAgain": "驗證失敗，請重試。"
+    "verifyFailedPleaseTryAgain": "驗證失敗，請重試。",
+    "sendVerifyEmailFailedPleaseTryAgain": "發送驗證郵件失敗，請重試。",
+    "verificationEmailSentPleaseCheckYourInbox": "驗證郵件已發送，請檢查您的收件箱。"
 }

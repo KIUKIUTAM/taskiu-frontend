@@ -38,7 +38,7 @@ export const useGoogleLogin = () => {
     },
     onError: (error) => {
       console.error('Login Failed:', error);
-      toast.error(t('loginFailedPleaseTryAgain', { ns: 'error' }));
+      toast.error(t('loginFailedPleaseTryAgain', { ns: 'toast' }));
       hasRun.current = false;
       setIsAuthorizing(false);
     },

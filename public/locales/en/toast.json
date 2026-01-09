@@ -4,5 +4,7 @@
     "loginFailedPleaseTryAgain": "Login failed, please try again.",
     "registerFailedPleaseTryAgain": "Register failed, please try again.",
     "verifierNotFoundPleaseTryAgain": "Verifier code not found, please try again.",
-    "verifyFailedPleaseTryAgain": "Verification failed, please try again."
+    "verifyFailedPleaseTryAgain": "Verification failed, please try again.",
+    "sendVerifyEmailFailedPleaseTryAgain": "Send verify email failed, please try again.",
+    "verificationEmailSentPleaseCheckYourInbox": "Verification email sent, please check your inbox."
 }

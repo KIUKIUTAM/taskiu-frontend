@@ -19,7 +19,7 @@ export const useEmailVerify = () => {
     },
     onError: (error) => {
       console.error('Verify Failed:', error);
-      toast.error(t('verifyFailedPleaseTryAgain', { ns: 'error' }));
+      toast.error(t('verifyFailedPleaseTryAgain', { ns: 'toast' }));
     },
   });
 

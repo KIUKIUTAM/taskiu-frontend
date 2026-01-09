@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import toast from 'react-hot-toast';
 
 export const useEmailSend = () => {
-  const { t } = useTranslation('error');
+  const { t } = useTranslation('toast');
 
   const mutationSend = useMutation({
     mutationFn: async () => {
@@ -14,8 +14,8 @@ export const useEmailSend = () => {
       toast.success(t('verificationEmailSentPleaseCheckYourInbox'));
     },
     onError: (error) => {
-      console.error('Register Failed:', error);
-      toast.error(t('registerFailedPleaseTryAgain', { ns: 'error' }));
+      console.error('send Verify Email Failed:', error);
+      toast.error(t('sendVerifyEmailFailedPleaseTryAgain', { ns: 'toast' }));
     },
   });
 

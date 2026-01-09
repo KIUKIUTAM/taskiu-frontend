@@ -20,7 +20,7 @@ interface ProblemDetail {
 export const useEmailRegister = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const { t } = useTranslation('common');
+  const { t } = useTranslation('toast');
 
   const mutation = useMutation({
     mutationFn: async ({ email, password, humanVerifyToken }: LoginCredentials) => {
@@ -43,7 +43,7 @@ export const useEmailRegister = () => {
         if (status === 409) {
           // 針對 Email 已存在的特定處理
           // 你可以在 i18n 檔中加一個 'emailAlreadyExists'
-          toast.error(t('emailAlreadyExists', { ns: 'error' }));
+          toast.error(t('emailAlreadyExists', { ns: 'toast' }));
           return;
         }
 
@@ -52,7 +52,7 @@ export const useEmailRegister = () => {
       }
 
       // 3. 其他錯誤 (500, 400, 網路錯誤等) 的預設處理
-      toast.error(t('registerFailedPleaseTryAgain', { ns: 'error' }));
+      toast.error(t('registerFailedPleaseTryAgain', { ns: 'toast' }));
     },
   });
 

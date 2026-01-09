@@ -75,7 +75,7 @@ export const EmailRegisterForm: React.FC = () => {
 
   const onSubmit = (data: RegisterFormValues) => {
     if (!token) {
-      toast.error(t('pleaseWaitForVerification', { ns: 'error' }));
+      toast.error(t('pleaseWaitForVerification', { ns: 'toast' }));
       return;
     }
     onEmailRegister(data, token);
@@ -190,7 +190,7 @@ export const EmailRegisterForm: React.FC = () => {
 
         {/* Turnstile component */}
         <div className="my-4">
-          {!isSuccess && ( // 成功後隱藏 Turnstile
+          {!isSuccess && (
             <Turnstile
               siteKey={SITE_KEY}
               onSuccess={(token) => setToken(token)}
