@@ -9,11 +9,12 @@ export const AuthGuard = ({ children }: { children: React.ReactNode }) => {
   const { data: user, isLoading, isError } = useAuth();
 
   // Redirect to home page if there is an error (not authenticated)
-  // useEffect(() => {
-  //   if (isError) navigate('/', { replace: true });
-  // }, [isError, navigate]);
+  useEffect(() => {
+    if (isError) navigate('/', { replace: true });
+  }, [isError, navigate]);
 
   // Redirect to email verification page if email is not verified
+  console.log('AuthGuard user:', user);
   useEffect(() => {
     if (user && !user.verified) {
       navigate('/verify-email', { replace: true });

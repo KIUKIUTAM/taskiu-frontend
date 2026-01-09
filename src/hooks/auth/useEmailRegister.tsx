@@ -4,6 +4,8 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { AxiosError } from 'axios';
+import { set } from 'zod';
+import { setAccessToken } from '@/api/api-client';
 
 interface LoginCredentials {
   email: string;
@@ -27,7 +29,7 @@ export const useEmailRegister = () => {
       return await authApi.registerWithEmail(email, password, humanVerifyToken);
     },
     onSuccess: (data: any) => {
-      localStorage.setItem('accessToken', data.data.accessToken);
+      setAccessToken(data.data.accessToken);
       queryClient.invalidateQueries({ queryKey: ['auth-user'] });
       navigate('/verify-email');
     },

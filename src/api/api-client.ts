@@ -1,10 +1,22 @@
-import axios from 'axios';
+import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
 
 // 基礎設定
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
+let _accessToken: string | null = localStorage.getItem('accessToken');
+
+// 2. 匯出一個用來設定 Token 的函式
+export const setAccessToken = (token: string | null) => {
+  _accessToken = token;
+
+  if (token) {
+    localStorage.setItem('accessToken', token);
+  } else {
+    localStorage.removeItem('accessToken');
+  }
+};
 // =================================================================
-// 1. Public Client (for public: login, register, refresh token itself)
+// 1. Public Client
 // =================================================================
 export const publicClient = axios.create({
   baseURL: BASE_URL,
@@ -13,20 +25,19 @@ export const publicClient = axios.create({
 });
 
 // =================================================================
-// 2. Private Client (for private: all requests that need Access Token)
+// 2. Private Client
 // =================================================================
 export const privateClient = axios.create({
   baseURL: BASE_URL,
   headers: { 'Content-Type': 'application/json' },
-  withCredentials: true, // If your Refresh Token is stored in an HttpOnly Cookie, this line is very important
+  withCredentials: true,
 });
 
-// [Request Interceptor]: Automatically add Access Token to Header
+// [Request Interceptor]
 privateClient.interceptors.request.use(
   (config) => {
-    // Get Token from LocalStorage or Store
     const token = localStorage.getItem('accessToken');
-    if (token) {
+    if (token && token !== 'undefined' && token !== 'null') {
       config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
@@ -34,39 +45,74 @@ privateClient.interceptors.request.use(
   (error) => Promise.reject(error),
 );
 
-// [Response Interceptor]: Handle Token Expiration (401)
+let isRefreshing = false;
+let failedQueue: any[] = [];
+
+const processQueue = (error: any, token: string | null = null) => {
+  failedQueue.forEach((prom) => {
+    if (error) {
+      prom.reject(error);
+    } else {
+      prom.resolve(token);
+    }
+  });
+
+  failedQueue = [];
+};
+
+// [Response Interceptor]
 privateClient.interceptors.response.use(
   (response) => response,
-  async (error) => {
-    const originalRequest = error.config;
+  async (error: AxiosError) => {
+    const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
 
-    // If you encounter a 401 error and this request has not been retried yet
+    if (!originalRequest) return Promise.reject(error);
+
+    // 處理 401 錯誤
     if (error.response?.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true; // Mark as retried to avoid infinite loop
+      // 如果正在刷新中，將請求加入佇列等待
+      if (isRefreshing) {
+        return new Promise(function (resolve, reject) {
+          failedQueue.push({ resolve, reject });
+        })
+          .then((token) => {
+            originalRequest.headers.Authorization = `Bearer ${token}`;
+            return privateClient(originalRequest);
+          })
+          .catch((err) => {
+            return Promise.reject(err);
+          });
+      }
+
+      originalRequest._retry = true;
+      isRefreshing = true;
 
       try {
-        // 1. Call Refresh Token API (usually using publicClient or directly axios)
-        // If your refresh token is stored in a cookie, the backend will read it automatically
+        // 1. 呼叫 Refresh Token API
         const { data } = await publicClient.post('/auth/refresh-token');
 
-        // 2. Get the new Access Token and save it
+        // 2. 儲存新 Token
         const newAccessToken = data.accessToken;
-        localStorage.setItem('accessToken', newAccessToken);
+        setAccessToken(newAccessToken);
 
-        // 3. Update the original request's Header
+        // 3. 處理佇列中的請求 (通知它們刷新成功了，並給予新 Token)
+        processQueue(null, newAccessToken);
+
+        // 4. 重試當前這個原本失敗的請求
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
-
-        // 4. Retry the original failed request
         return privateClient(originalRequest);
       } catch (refreshError) {
-        // Refresh also failed (meaning Refresh Token is expired or invalid)
-        console.error('Refresh token failed', refreshError);
+        // 刷新失敗 (Token 過期或無效)
+        processQueue(refreshError, null);
 
-        // Clear data and force logout
+        console.error('Refresh token failed', refreshError);
         localStorage.removeItem('accessToken');
-        window.location.href = '/'; // Redirect to welcome page
+        window.location.href = '/'; // 強制登出
 
         return Promise.reject(refreshError);
+      } finally {
+        // 無論成功失敗，結束刷新狀態
+        isRefreshing = false;
       }
     }
 
