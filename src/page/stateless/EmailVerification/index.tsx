@@ -4,18 +4,24 @@ import { useTranslation } from 'react-i18next';
 import { useEmailSend } from '@/hooks/auth/useEmailSend';
 import { useEmailVerify } from '@/hooks/auth/useEmailVerify';
 import { useAuth } from '@/hooks/auth/useAuth';
+import { useNavigate } from 'react-router-dom';
 
 const EmailVerification = () => {
   const [otp, setOtp] = useState<string[]>(new Array(6).fill(''));
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
-  const { t } = useTranslation('common');
+  const { t } = useTranslation(['common', 'auth']);
 
   const { data: user } = useAuth();
   const { sendVerifyEmail, isSending } = useEmailSend();
   const { verifyEmail, isVerifying, isVerifySuccess } = useEmailVerify();
 
+  const navigate = useNavigate();
   const [timer, setTimer] = useState(0);
-
+  // useEffect(() => {
+  //   if (user?.verified) {
+  //     navigate('/dashboard', { replace: true });
+  //   }
+  // }, [user, navigate]);
   // Handle input change
   const handleChange = (element: HTMLInputElement, index: number) => {
     const value = element.value;
@@ -94,7 +100,7 @@ const EmailVerification = () => {
     return (
       <>
         <Send className="w-3 h-3" />
-        {t('resend')}
+        {t('resend', { ns: 'auth' })}
       </>
     );
   };
@@ -131,7 +137,7 @@ const EmailVerification = () => {
           {isVerifySuccess ? (
             <div className="text-center">
               <button className="w-full bg-gray-900 text-white font-semibold py-3 px-4 rounded-xl hover:bg-gray-800 transition-colors">
-                {t('goToDashboard')}
+                {t('goToDashboard', { ns: 'auth' })}
               </button>
             </div>
           ) : (
@@ -163,11 +169,11 @@ const EmailVerification = () => {
                 {isVerifying ? (
                   <>
                     <Loader2 className="w-5 h-5 animate-spin" />
-                    {t('verifying')}
+                    {t('verifying', { ns: 'auth' })}
                   </>
                 ) : (
                   <>
-                    {t('verify')}
+                    {t('verify', { ns: 'auth' })}
                     <ArrowRight className="w-5 h-5" />
                   </>
                 )}

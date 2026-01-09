@@ -12,11 +12,12 @@ import {
 import { authApi } from '@/api/Auth/authApi';
 import { useTranslation } from 'react-i18next';
 import toast from 'react-hot-toast';
+import { setAccessToken } from '@/api/api-client';
 
 export const useGitHubLogin = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const { t } = useTranslation('common');
+  const { t } = useTranslation('toast');
   const hasRun = useRef(false);
 
   const [isAuthorizing, setIsAuthorizing] = useState(false);
@@ -29,7 +30,8 @@ export const useGitHubLogin = () => {
       return await authApi.loginWithGitHub(code, verifier);
     },
     onSuccess: (data: any) => {
-      localStorage.setItem('accessToken', data.data.accessToken);
+      setAccessToken(data.data.accessToken);
+
       queryClient.invalidateQueries({ queryKey: ['auth-user'] });
       hasRun.current = false;
       setIsAuthorizing(false);
@@ -37,7 +39,7 @@ export const useGitHubLogin = () => {
     },
     onError: (error) => {
       console.error('Login Failed:', error);
-      toast.error(t('loginFailedPleaseTryAgain', { ns: 'toast' }));
+      toast.error(t('loginFailedPleaseTryAgain'));
       hasRun.current = false;
       setIsAuthorizing(false);
     },

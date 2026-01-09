@@ -12,11 +12,12 @@ import {
 import { authApi } from '@/api/Auth/authApi';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-hot-toast';
+import { setAccessToken } from '@/api/api-client';
 
 export const useGoogleLogin = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const { t } = useTranslation('common');
+  const { t } = useTranslation('toast');
   const hasRun = useRef(false);
 
   //for the loading state
@@ -30,7 +31,8 @@ export const useGoogleLogin = () => {
       return await authApi.loginWithGoogle(code, verifier);
     },
     onSuccess: (data: any) => {
-      localStorage.setItem('accessToken', data.data.accessToken);
+      setAccessToken(data.data.accessToken);
+
       queryClient.invalidateQueries({ queryKey: ['auth-user'] });
       hasRun.current = false;
       setIsAuthorizing(false);
@@ -38,7 +40,7 @@ export const useGoogleLogin = () => {
     },
     onError: (error) => {
       console.error('Login Failed:', error);
-      toast.error(t('loginFailedPleaseTryAgain', { ns: 'toast' }));
+      toast.error(t('loginFailedPleaseTryAgain'));
       hasRun.current = false;
       setIsAuthorizing(false);
     },

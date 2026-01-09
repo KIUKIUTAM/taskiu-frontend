@@ -5,7 +5,7 @@ import { useSearchParams } from 'react-router-dom';
 export const GoogleCallbackPage: React.FC = () => {
   const [searchParams] = useSearchParams();
   const hasSentMessage = useRef(false);
-  const { t } = useTranslation();
+  const { t } = useTranslation('common');
 
   useEffect(() => {
     const code = searchParams.get('code');
