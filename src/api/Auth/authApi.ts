@@ -16,5 +16,18 @@ export const authApi = {
       email,
       password,
     }),
+  registerWithEmail: (email: string, password: string, humanVerifyToken: string) =>
+    publicClient.post('/auth/register', {
+      email,
+      password,
+      humanVerifyToken,
+    }),
+  //send verify email api
+  sendVerifyEmail: () => privateClient.post('/email/send-verify-email'),
+  verifyEmail: (verifyCode: string) =>
+    privateClient.post('/email/verify-email', {
+      verifyCode,
+    }),
+  getAuthUser: () => privateClient.get('/auth/user'),
   logout: () => privateClient.post('/auth/logout'),
 };

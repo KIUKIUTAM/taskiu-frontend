@@ -5,11 +5,11 @@ import Layout from '@/page/public/Layout/index';
 import About from '@/page/public/About/index';
 import Services from '@/page/public/Services/index';
 import Contact from '@/page/public/Contact/index';
-import { RegisterPage } from '@/page/public/Register/index';
+import { RegisterPage } from '@/page/stateless/Register/index';
 
 import StateLessLayout from '@/page/stateless/Layout/index';
-
 import DashLayout from '@/page/workplace/Layout/index';
+const EmailVerification = lazy(() => import('@/page/stateless/EmailVerification/index'));
 const DashboardHome = lazy(() => import('@/page/workplace/Home/index'));
 const MissionsPage = lazy(() => import('@/page/workplace/Missions/index'));
 const TermsPage = lazy(() => import('@/page/stateless/terms/index'));
@@ -65,6 +65,14 @@ const routes = [
         element: (
           <Suspense fallback={<PageLoader />}>
             <TermsPage />
+          </Suspense>
+        ),
+      },
+      {
+        path: 'verify-email',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <EmailVerification />
           </Suspense>
         ),
       },

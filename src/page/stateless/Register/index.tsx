@@ -12,10 +12,6 @@ export const RegisterPage: React.FC = () => {
     navigate(-1);
   };
 
-  const handleEmailRegister = async (data: any) => {
-    console.log('Register Data:', data);
-  };
-
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col relative">
       <button
@@ -39,7 +35,7 @@ export const RegisterPage: React.FC = () => {
       {/* 主要卡片區塊 */}
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md pb-10">
         <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-          <EmailRegisterForm onEmailRegister={handleEmailRegister} isEmailLoading={false} />
+          <EmailRegisterForm />
 
           <div className="mt-6">
             <div className="relative">

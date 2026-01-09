@@ -1,0 +1,8 @@
+{
+    "emailAlreadyExists": "The email address is already registered.",
+    "pleaseWaitForVerification": "Please wait for verification to complete.",
+    "loginFailedPleaseTryAgain": "Login failed, please try again.",
+    "registerFailedPleaseTryAgain": "Register failed, please try again.",
+    "verifierNotFoundPleaseTryAgain": "Verifier code not found, please try again.",
+    "verifyFailedPleaseTryAgain": "Verification failed, please try again."
+}

@@ -30,7 +30,5 @@
   "blog": "Blog",
   "startUsing": "Start",
   "loading": "Loading",
-  "back": "Back",
-  "loginFailedPleaseTryAgain": "Login failed, please try again",
-  "verifierNotFoundPleaseTryAgain": "Verifier code not found, please try again"
+  "back": "Back"
 }

@@ -11,6 +11,7 @@ import {
 } from '@/features/auth/google/googleEnv';
 import { authApi } from '@/api/Auth/authApi';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'react-hot-toast';
 
 export const useGoogleLogin = () => {
   const navigate = useNavigate();
@@ -37,7 +38,7 @@ export const useGoogleLogin = () => {
     },
     onError: (error) => {
       console.error('Login Failed:', error);
-      alert(t('loginFailedPleaseTryAgain'));
+      toast.error(t('loginFailedPleaseTryAgain', { ns: 'error' }));
       hasRun.current = false;
       setIsAuthorizing(false);
     },

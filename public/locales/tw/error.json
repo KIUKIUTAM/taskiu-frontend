@@ -1,0 +1,8 @@
+{
+    "emailAlreadyExists": "此電子郵件地址已被註冊。",
+    "pleaseWaitForVerification": "請等待驗證完成。",
+    "loginFailedPleaseTryAgain": "登入失敗，請重試。",
+    "registerFailedPleaseTryAgain": "註冊失敗，請重試。",
+    "verifierNotFoundPleaseTryAgain": "找不到驗證碼，請重試。",
+    "verifyFailedPleaseTryAgain": "驗證失敗，請重試。"
+}

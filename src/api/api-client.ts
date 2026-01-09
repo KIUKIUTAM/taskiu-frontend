@@ -63,7 +63,7 @@ privateClient.interceptors.response.use(
 
         // Clear data and force logout
         localStorage.removeItem('accessToken');
-        //window.location.href = '/';
+        window.location.href = '/'; // Redirect to welcome page
 
         return Promise.reject(refreshError);
       }

@@ -82,9 +82,9 @@ const Header: React.FC = () => {
 
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center space-x-1 ml-16">
-            {navItems.map((item, index) => (
+            {navItems.map((item) => (
               <button
-                key={index}
+                key={item.href}
                 onClick={() => navigate(item.href)}
                 className="relative px-4 py-2 text-gray-700 font-medium text-sm xl:text-base hover:text-blue-950 transition-colors duration-300 group"
               >
@@ -202,9 +202,9 @@ const Header: React.FC = () => {
         }`}
       >
         <div className="px-4 pt-2 pb-6 space-y-1 bg-white border-t border-gray-100">
-          {navItems.map((item, index) => (
+          {navItems.map((item) => (
             <a
-              key={index}
+              key={item.href}
               href={item.href}
               onClick={() => setIsMobileMenuOpen(false)}
               className="block px-4 py-3 text-gray-700 font-medium rounded-lg hover:bg-linear-to-r hover:from-purple-50 hover:to-pink-50 hover:text-purple-600 transition-all duration-200"

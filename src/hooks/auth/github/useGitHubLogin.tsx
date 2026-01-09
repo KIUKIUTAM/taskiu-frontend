@@ -11,6 +11,7 @@ import {
 } from '@/features/auth/github/githubEnv';
 import { authApi } from '@/api/Auth/authApi';
 import { useTranslation } from 'react-i18next';
+import toast from 'react-hot-toast';
 
 export const useGitHubLogin = () => {
   const navigate = useNavigate();
@@ -36,7 +37,7 @@ export const useGitHubLogin = () => {
     },
     onError: (error) => {
       console.error('Login Failed:', error);
-      alert(t('loginFailedPleaseTryAgain'));
+      toast.error(t('loginFailedPleaseTryAgain', { ns: 'error' }));
       hasRun.current = false;
       setIsAuthorizing(false);
     },

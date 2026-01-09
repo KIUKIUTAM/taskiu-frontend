@@ -4,33 +4,29 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 
-interface LoginCredentials {
-  email: string;
-  password: string;
-}
-
-export const useEmailLogin = () => {
+export const useEmailVerify = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { t } = useTranslation('common');
 
-  const mutation = useMutation({
-    mutationFn: async ({ email, password }: LoginCredentials) => {
-      return await authApi.loginWithEmail(email, password);
+  const mutationVerify = useMutation({
+    mutationFn: async (verifyCode: string) => {
+      return await authApi.verifyEmail(verifyCode);
     },
     onSuccess: (data: any) => {
-      localStorage.setItem('accessToken', data.data.accessToken);
       queryClient.invalidateQueries({ queryKey: ['auth-user'] });
       navigate('/dashboard');
     },
     onError: (error) => {
-      console.error('Login Failed:', error);
-      toast.error(t('loginFailedPleaseTryAgain'));
+      console.error('Verify Failed:', error);
+      toast.error(t('verifyFailedPleaseTryAgain', { ns: 'error' }));
     },
   });
 
   return {
-    login: mutation.mutate,
-    isLoading: mutation.isPending,
+    verifyEmail: mutationVerify.mutate,
+    isVerifying: mutationVerify.isPending,
+    isVerifySuccess: mutationVerify.isSuccess,
+    isVerifyError: mutationVerify.isError,
   };
 };
