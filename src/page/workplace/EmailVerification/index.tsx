@@ -10,19 +10,21 @@ const EmailVerification = () => {
   const [otp, setOtp] = useState<string[]>(new Array(6).fill(''));
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const { t } = useTranslation(['common', 'auth']);
+  const navigate = useNavigate();
 
   const { data: user } = useAuth();
   const { sendVerifyEmail, isSending } = useEmailSend();
   const { verifyEmail, isVerifying, isVerifySuccess } = useEmailVerify();
 
-  const navigate = useNavigate();
+  const showSuccessUI = isVerifySuccess || (user?.verified && isVerifySuccess);
+
+  useEffect(() => {
+    if (user?.verified && !isVerifySuccess) {
+      navigate('/dashboard', { replace: true });
+    }
+  }, [user, isVerifySuccess, navigate]);
+
   const [timer, setTimer] = useState(0);
-  // useEffect(() => {
-  //   if (user?.verified) {
-  //     navigate('/dashboard', { replace: true });
-  //   }
-  // }, [user, navigate]);
-  // Handle input change
   const handleChange = (element: HTMLInputElement, index: number) => {
     const value = element.value;
     if (Number.isNaN(Number(value))) return;
@@ -112,19 +114,19 @@ const EmailVerification = () => {
           {/* Header Section */}
           <div className="text-center mb-8">
             <div className="mx-auto w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
-              {isVerifySuccess ? (
+              {showSuccessUI ? (
                 <CheckCircle2 className="w-8 h-8 text-green-600" />
               ) : (
                 <Mail className="w-8 h-8 text-blue-600" />
               )}
             </div>
             <h2 className="text-2xl font-bold mb-2">
-              {isVerifySuccess
+              {showSuccessUI
                 ? t('verifysuccess', { ns: 'auth' })
                 : t('verifyEmail', { ns: 'auth' })}
             </h2>
             <p className="text-gray-500 text-sm">
-              {isVerifySuccess
+              {showSuccessUI
                 ? t('youCanNowCloseThisPageOrContinue', { ns: 'auth' })
                 : t('weHaveSentA6DigitVerificationCode', {
                     email: user?.email || 'your email',
@@ -134,9 +136,12 @@ const EmailVerification = () => {
           </div>
 
           {/* Refactor 2: Fix negated condition (!isVerifySuccess) by swapping blocks */}
-          {isVerifySuccess ? (
+          {showSuccessUI ? (
             <div className="text-center">
-              <button className="w-full bg-gray-900 text-white font-semibold py-3 px-4 rounded-xl hover:bg-gray-800 transition-colors">
+              <button
+                onClick={() => navigate('/dashboard', { replace: true })}
+                className="w-full bg-gray-900 text-white font-semibold py-3 px-4 rounded-xl hover:bg-gray-800 transition-colors"
+              >
                 {t('goToDashboard', { ns: 'auth' })}
               </button>
             </div>
@@ -197,7 +202,6 @@ const EmailVerification = () => {
                     }
                   `}
                 >
-                  {/* Using the extracted function here */}
                   {renderResendContent()}
                 </button>
               </div>

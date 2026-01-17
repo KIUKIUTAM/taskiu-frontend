@@ -1,10 +1,8 @@
-// Header.tsx
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import LanguageChangeButton from '@/components/languageChangeButton';
 import { useLogout } from '@/hooks/auth/useLogout';
-import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '@/hooks/auth/useAuth';
 
 // FIX: Updated type definition to accept 'HTMLElement | null'
@@ -14,7 +12,6 @@ function useOnClickOutside<T extends HTMLElement>(
 ) {
   useEffect(() => {
     const listener = (event: MouseEvent | TouchEvent) => {
-      // Do nothing if clicking ref's element or descendent elements
       if (!ref.current || ref.current.contains(event.target as Node)) {
         return;
       }
@@ -33,10 +30,10 @@ const Header: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(true);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+
   const { mutate: logout } = useLogout();
-  // Ref is initialized with null, which matches the hook's new signature
   const userMenuRef = useRef<HTMLDivElement>(null);
-  const { data: user, isLoading, isError } = useAuth();
+  const { data: user } = useAuth(); // 這裡不需要 isLoading, isError，只要 user
 
   const { t } = useTranslation('common');
   const navigate = useNavigate();
@@ -52,11 +49,17 @@ const Header: React.FC = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const navItems = [
-    { label: t('home'), href: '/dashboard' },
-    { label: t('missions'), href: '/dashboard/missions' },
-    { label: t('team'), href: '/dashboard/team' },
-  ];
+  // 1. 判斷是否已驗證
+  const isVerified = !!user?.verified;
+
+  // 2. 如果未驗證，navItems 為空陣列 (這樣 Desktop 和 Mobile 都不會顯示導航連結)
+  const navItems = isVerified
+    ? [
+        { label: t('home'), href: '/dashboard' },
+        { label: t('missions'), href: '/dashboard/missions' },
+        { label: t('team'), href: '/dashboard/team' },
+      ]
+    : [];
 
   return (
     <header
@@ -71,6 +74,7 @@ const Header: React.FC = () => {
           {/* Logo Section */}
           <div
             className="flex items-center cursor-pointer group"
+            // 如果未驗證，點擊 Logo 還是去 dashboard (會被 AuthGuard 攔截回 verify-email)，或者你可以改成不跳轉
             onClick={() => navigate('/dashboard')}
           >
             <div className="flex items-center gap-2">
@@ -81,6 +85,7 @@ const Header: React.FC = () => {
           </div>
 
           {/* Desktop Navigation */}
+          {/* 因為 navItems 變空了，未驗證時這裡自然不會渲染任何按鈕 */}
           <nav className="hidden lg:flex items-center space-x-1 ml-16">
             {navItems.map((item) => (
               <button
@@ -110,6 +115,7 @@ const Header: React.FC = () => {
                       src={user.picture}
                       alt="User Avatar"
                       className="w-full h-full object-cover"
+                      referrerPolicy="no-referrer"
                     />
                   )}
                 </div>
@@ -127,27 +133,31 @@ const Header: React.FC = () => {
                     )}
                   </div>
 
-                  <div className="py-1">
-                    <button
-                      onClick={() => {
-                        navigate('/dashboard/profile');
-                        setIsUserMenuOpen(false);
-                      }}
-                      className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition-colors"
-                    >
-                      Profile
-                    </button>
-                    <button
-                      onClick={() => {
-                        navigate('/dashboard/settings');
-                        setIsUserMenuOpen(false);
-                      }}
-                      className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition-colors"
-                    >
-                      Settings
-                    </button>
-                  </div>
+                  {/* 3. 只有驗證過才顯示 Profile 和 Settings */}
+                  {isVerified && (
+                    <div className="py-1">
+                      <button
+                        onClick={() => {
+                          navigate('/dashboard/profile');
+                          setIsUserMenuOpen(false);
+                        }}
+                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition-colors"
+                      >
+                        Profile
+                      </button>
+                      <button
+                        onClick={() => {
+                          navigate('/dashboard/settings');
+                          setIsUserMenuOpen(false);
+                        }}
+                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition-colors"
+                      >
+                        Settings
+                      </button>
+                    </div>
+                  )}
 
+                  {/* Logout 永遠顯示 */}
                   <div className="py-1 border-t border-gray-100">
                     <button
                       onClick={() => {
@@ -203,21 +213,28 @@ const Header: React.FC = () => {
       >
         <div className="px-4 pt-2 pb-6 space-y-1 bg-white border-t border-gray-100">
           {navItems.map((item) => (
-            <a
+            <button
               key={item.href}
-              href={item.href}
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="block px-4 py-3 text-gray-700 font-medium rounded-lg hover:bg-linear-to-r hover:from-purple-50 hover:to-pink-50 hover:text-purple-600 transition-all duration-200"
+              onClick={() => {
+                navigate(item.href);
+                setIsMobileMenuOpen(false);
+              }}
+              className="block w-full text-left px-4 py-3 text-gray-700 font-medium rounded-lg hover:bg-linear-to-r hover:from-purple-50 hover:to-pink-50 hover:text-purple-600 transition-all duration-200"
             >
               {item.label}
-            </a>
+            </button>
           ))}
 
           {/* Mobile Action Buttons */}
           <div className="pt-4 border-t border-gray-100 mt-2">
             <div className="flex items-center px-4 py-3 mb-2">
               {user?.picture && (
-                <img className="h-8 w-8 rounded-full mr-3" src={user.picture} alt="" />
+                <img
+                  className="h-8 w-8 rounded-full mr-3"
+                  src={user.picture}
+                  alt=""
+                  referrerPolicy="no-referrer"
+                />
               )}
               <div>
                 {user?.name && <div className="text-sm font-medium text-gray-800">{user.name}</div>}

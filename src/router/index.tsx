@@ -9,11 +9,11 @@ import { RegisterPage } from '@/page/stateless/Register/index';
 
 import StateLessLayout from '@/page/stateless/Layout/index';
 import DashLayout from '@/page/workplace/Layout/index';
-const EmailVerification = lazy(() => import('@/page/stateless/EmailVerification/index'));
+const EmailVerification = lazy(() => import('@/page/workplace/EmailVerification/index'));
 const DashboardHome = lazy(() => import('@/page/workplace/Home/index'));
 const MissionsPage = lazy(() => import('@/page/workplace/Missions/index'));
 const TermsPage = lazy(() => import('@/page/public/terms/index'));
-import NotFound from '@/page/public/NotFount/index';
+import NotFound from '@/page/public/NotFound/index';
 
 import Test from '@/page/Test/index.jsx';
 import TodoList from '@/page/Test/tailwindcss';
@@ -68,18 +68,9 @@ const routes = [
           </Suspense>
         ),
       },
-      {
-        path: 'verify-email',
-        element: (
-          <Suspense fallback={<PageLoader />}>
-            <EmailVerification />
-          </Suspense>
-        ),
-      },
     ],
   },
   {
-    path: 'dashboard',
     element: (
       <AuthGuard>
         <DashLayout />
@@ -87,7 +78,7 @@ const routes = [
     ),
     children: [
       {
-        index: true,
+        path: 'dashboard',
         element: (
           <Suspense fallback={<PageLoader />}>
             <DashboardHome />
@@ -105,6 +96,14 @@ const routes = [
       {
         path: 'team',
         element: <div>Team Page - Under Construction</div>,
+      },
+      {
+        path: 'verify-email',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <EmailVerification />
+          </Suspense>
+        ),
       },
     ],
   },

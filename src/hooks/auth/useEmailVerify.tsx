@@ -14,10 +14,9 @@ export const useEmailVerify = () => {
     mutationFn: async (verifyCode: string) => {
       return await authApi.verifyEmail(verifyCode);
     },
-    onSuccess: (data: any) => {
+    onSuccess: async (data: any) => {
       setAccessToken(data.accessToken);
-      queryClient.invalidateQueries({ queryKey: ['auth-user'] });
-      navigate('/dashboard');
+      await queryClient.invalidateQueries({ queryKey: ['auth-user'] });
     },
     onError: (error) => {
       console.error('Verify Failed:', error);

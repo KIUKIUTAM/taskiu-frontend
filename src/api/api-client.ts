@@ -36,7 +36,7 @@ export const privateClient = axios.create({
 // [Request Interceptor]
 privateClient.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('accessToken');
+    const token = _accessToken;
     if (token && token !== 'undefined' && token !== 'null') {
       config.headers.Authorization = `Bearer ${token}`;
     }
