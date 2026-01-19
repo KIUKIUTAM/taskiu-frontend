@@ -1,11 +1,12 @@
 import { useTranslation } from 'react-i18next';
 import React, { useEffect, useRef } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 export const GitHubCallbackPage: React.FC = () => {
   const [searchParams] = useSearchParams();
   const hasSentMessage = useRef(false);
   const { t } = useTranslation('common');
+  const navigate = useNavigate();
 
   useEffect(() => {
     const code = searchParams.get('code');
@@ -35,7 +36,8 @@ export const GitHubCallbackPage: React.FC = () => {
     } else if (!window.opener) {
       // If the user did not open this page via a popup (e.g., directly pasted the URL)
       // Redirect them to the homepage
-      window.location.replace('/');
+      console.log('no opener');
+      navigate('/');
     }
   }, [searchParams]);
 
