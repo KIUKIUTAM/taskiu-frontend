@@ -36,7 +36,6 @@ export const GitHubCallbackPage: React.FC = () => {
     } else if (!window.opener) {
       // If the user did not open this page via a popup (e.g., directly pasted the URL)
       // Redirect them to the homepage
-      console.log('no opener');
       navigate('/');
     }
   }, [searchParams]);

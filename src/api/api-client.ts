@@ -5,7 +5,8 @@ const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 let _accessToken: string | null = localStorage.getItem('accessToken');
 
-// 2. 匯出一個用來設定 Token 的函式
+export const getAccessToken = () => _accessToken;
+
 export const setAccessToken = (token: string | null) => {
   _accessToken = token;
 
@@ -64,14 +65,22 @@ const processQueue = (error: any, token: string | null = null) => {
 privateClient.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {
+    console.log('=== AXIOS INTERCEPTOR ERROR ===');
+    console.log('Error status:', error.response?.status);
+    console.log('Error config:', error.config);
+    console.log('Current URL:', window.location.href);
+
     const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
 
     if (!originalRequest) return Promise.reject(error);
 
     // 處理 401 錯誤
     if (error.response?.status === 401 && !originalRequest._retry) {
+      console.log('401 Error detected, starting refresh process...');
+
       // 如果正在刷新中，將請求加入佇列等待
       if (isRefreshing) {
+        console.log('Already refreshing, adding to queue...');
         return new Promise(function (resolve, reject) {
           failedQueue.push({ resolve, reject });
         })
@@ -88,26 +97,33 @@ privateClient.interceptors.response.use(
       isRefreshing = true;
 
       try {
+        console.log('Attempting to refresh token...');
         // 1. 呼叫 Refresh Token API
         const { data } = await publicClient.post('/auth/refresh-token');
 
         // 2. 儲存新 Token
         const newAccessToken = data.accessToken;
         setAccessToken(newAccessToken);
+        console.log('Token refreshed successfully');
 
-        // 3. 處理佇列中的請求 (通知它們刷新成功了，並給予新 Token)
+        // 3. 處理佇列中的請求
         processQueue(null, newAccessToken);
 
         // 4. 重試當前這個原本失敗的請求
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
         return privateClient(originalRequest);
       } catch (refreshError) {
+        console.log('=== REFRESH TOKEN FAILED - REDIRECTING TO HOME ===');
+        console.log('Refresh error:', refreshError);
+
         // 刷新失敗 (Token 過期或無效)
         processQueue(refreshError, null);
 
         console.error('Refresh token failed', refreshError);
         localStorage.removeItem('accessToken');
-        window.location.href = '/'; // 強制登出
+
+        // 這裡是重定向的地方！
+        window.location.href = '/';
 
         return Promise.reject(refreshError);
       } finally {

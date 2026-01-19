@@ -2,11 +2,11 @@ import { authApi } from '@/api/Auth/authApi';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import toast from 'react-hot-toast';
 import { setAccessToken } from '@/api/api-client';
+import message from 'antd/es/message';
+import { fetchUserProfile } from './useAuth';
 
 export const useEmailVerify = () => {
-  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { t } = useTranslation('toast');
 
@@ -16,11 +16,14 @@ export const useEmailVerify = () => {
     },
     onSuccess: async (data: any) => {
       setAccessToken(data.accessToken);
-      await queryClient.invalidateQueries({ queryKey: ['auth-user'] });
+      await queryClient.ensureQueryData({
+        queryKey: ['auth-user'],
+        queryFn: fetchUserProfile,
+      });
     },
     onError: (error) => {
       console.error('Verify Failed:', error);
-      toast.error(t('verifyFailedPleaseTryAgain'));
+      message.error(t('verifyFailedPleaseTryAgain'));
     },
   });
 

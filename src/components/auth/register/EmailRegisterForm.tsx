@@ -1,24 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useTranslation, Trans } from 'react-i18next';
 import type { TFunction } from 'i18next';
-import { Loader, CheckCircle } from 'lucide-react'; // 新增 CheckCircle 圖示
 import { Turnstile } from '@marsidev/react-turnstile';
-import toast from 'react-hot-toast';
-import { useNavigate } from 'react-router-dom'; // 1. 引入導航 Hook
+import { useNavigate } from 'react-router-dom';
 import { useEmailRegister } from '@/hooks/auth/useEmailRegister';
 
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/Button';
+import { Form, Input, Button, Checkbox, Modal, Result, message, theme } from 'antd';
 
 const createRegisterSchema = (t: TFunction) => {
   return z
@@ -43,22 +33,18 @@ type RegisterFormValues = z.infer<ReturnType<typeof createRegisterSchema>>;
 
 export const EmailRegisterForm: React.FC = () => {
   const { t } = useTranslation(['auth', 'common']);
-  const navigate = useNavigate(); // 2. 初始化 navigate
+  const navigate = useNavigate();
   const [token, setToken] = useState<string | null>(null);
   const SITE_KEY = '0x4AAAAAACLC2eG_l7H3PQ5A';
 
-  const {
-    login: emailRegister,
-    isLoading: isEmailLoading,
-    isError: isEmailError,
-    isSuccess, // 3. 解構出 isSuccess
-  } = useEmailRegister();
+  const { token: themeToken } = theme.useToken();
+  const { login: emailRegister, isLoading: isEmailLoading, isSuccess } = useEmailRegister();
 
   const {
-    register,
+    control,
     handleSubmit,
-    reset, // 解構 reset
-    formState: { errors, isSubmitting, isValid },
+    reset,
+    formState: { isSubmitting, isValid, submitCount },
   } = useForm<RegisterFormValues>({
     resolver: zodResolver(createRegisterSchema(t)),
     defaultValues: {
@@ -75,118 +61,129 @@ export const EmailRegisterForm: React.FC = () => {
 
   const onSubmit = (data: RegisterFormValues) => {
     if (!token) {
-      toast.error(t('pleaseWaitForVerification', { ns: 'toast' }));
+      message.error(t('pleaseWaitForVerification', { ns: 'toast' }));
       return;
     }
     onEmailRegister(data, token);
   };
 
-  // 4. 使用 useEffect 處理成功後的副作用 (重置表單)
   useEffect(() => {
     if (isSuccess) {
-      reset(); // 清空表單
-      setToken(null); // 清除驗證 token
+      reset();
+      setToken(null);
     }
   }, [isSuccess, reset]);
 
-  // 5. 處理導航到首頁
   const handleGoHome = () => {
-    navigate('/'); // 這裡填寫你要跳轉的路徑，例如 '/' 或 '/login'
+    navigate('/');
   };
 
   const isButtonDisabled = isSubmitting || isEmailLoading || !token || !isValid;
 
   return (
     <>
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
-        {/* ... (省略 Input 欄位程式碼，保持原樣) ... */}
+      <Form
+        layout="vertical"
+        onFinish={handleSubmit(onSubmit)}
+        className="w-full"
+        requiredMark={false}
+      >
+        {/* Email Field - 將 Form.Item 移入 Controller 內部 */}
+        <Controller
+          name="email"
+          control={control}
+          render={({ field, fieldState: { error } }) => {
+            const showError = !!error && (!!field.value || submitCount > 0);
 
-        <div>
-          <label htmlFor="register-email" className="block text-sm font-medium text-gray-700 mb-1">
-            {t('emailAddress', { ns: 'common' })}
-          </label>
-          <input
-            type="email"
-            id="register-email"
-            {...register('email')}
-            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition ${
-              errors.email ? 'border-red-500' : 'border-gray-300'
-            }`}
-            placeholder="you@example.com"
-            disabled={isSubmitting || isEmailLoading || isSuccess} // 成功後也禁用
-          />
-          {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>}
-        </div>
+            return (
+              <Form.Item
+                label={t('emailAddress', { ns: 'common' })}
+                validateStatus={showError ? 'error' : ''}
+                help={showError ? error?.message : ''}
+              >
+                <Input
+                  {...field}
+                  size="large"
+                  placeholder="you@example.com"
+                  disabled={isSubmitting || isEmailLoading || isSuccess}
+                />
+              </Form.Item>
+            );
+          }}
+        />
 
-        <div>
-          <label
-            htmlFor="register-password"
-            className="block text-sm font-medium text-gray-700 mb-1"
-          >
-            {t('password', { ns: 'common' })}
-          </label>
-          <input
-            type="password"
-            id="register-password"
-            {...register('password')}
-            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition ${
-              errors.password ? 'border-red-500' : 'border-gray-300'
-            }`}
-            placeholder="••••••••"
-            disabled={isSubmitting || isEmailLoading || isSuccess}
-          />
-          {errors.password && (
-            <p className="mt-1 text-sm text-red-600">{errors.password.message}</p>
-          )}
-        </div>
+        {/* Password Field */}
+        <Controller
+          name="password"
+          control={control}
+          render={({ field, fieldState: { error } }) => {
+            const showError = !!error && (!!field.value || submitCount > 0);
 
-        <div>
-          <label
-            htmlFor="confirm-password"
-            className="block text-sm font-medium text-gray-700 mb-1"
-          >
-            {t('confirmPassword', { ns: 'auth' })}
-          </label>
-          <input
-            type="password"
-            id="confirm-password"
-            {...register('confirmPassword')}
-            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition ${
-              errors.confirmPassword ? 'border-red-500' : 'border-gray-300'
-            }`}
-            placeholder="••••••••"
-            disabled={isSubmitting || isEmailLoading || isSuccess}
-          />
-          {errors.confirmPassword && (
-            <p className="mt-1 text-sm text-red-600">{errors.confirmPassword.message}</p>
-          )}
-        </div>
+            return (
+              <Form.Item
+                label={t('password', { ns: 'common' })}
+                validateStatus={showError ? 'error' : ''}
+                help={showError ? error?.message : ''}
+              >
+                <Input.Password
+                  {...field}
+                  size="large"
+                  placeholder="••••••••"
+                  disabled={isSubmitting || isEmailLoading || isSuccess}
+                />
+              </Form.Item>
+            );
+          }}
+        />
+
+        {/* Confirm Password Field */}
+        <Controller
+          name="confirmPassword"
+          control={control}
+          render={({ field, fieldState: { error } }) => {
+            const showError = !!error && (!!field.value || submitCount > 0);
+
+            return (
+              <Form.Item
+                label={t('confirmPassword', { ns: 'auth' })}
+                validateStatus={showError ? 'error' : ''}
+                help={showError ? error?.message : ''}
+              >
+                <Input.Password
+                  {...field}
+                  size="large"
+                  placeholder="••••••••"
+                  disabled={isSubmitting || isEmailLoading || isSuccess}
+                />
+              </Form.Item>
+            );
+          }}
+        />
 
         {/* Terms of Service */}
-        <div className="flex items-start">
-          <div className="flex items-center h-5">
-            <input
-              id="terms"
-              type="checkbox"
-              className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-              required
-              disabled={isSuccess}
-            />
+        <Form.Item>
+          <div className="flex items-center">
+            <Checkbox required disabled={isSuccess} className="text-sm">
+              <Trans
+                i18nKey="agreeToTerms"
+                ns="auth"
+                components={{
+                  1: (
+                    <a
+                      href="/terms"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{ color: themeToken.colorPrimary }}
+                      className="hover:underline"
+                    >
+                      Terms
+                    </a>
+                  ),
+                }}
+              />
+            </Checkbox>
           </div>
-          <div className="ml-2 text-sm">
-            <Trans
-              i18nKey="agreeToTerms"
-              ns="auth"
-              components={{
-                1: (
-                  <a href="/terms" target="_blank" className="text-blue-600 hover:underline">
-                    Terms
-                  </a>
-                ),
-              }}
-            />
-          </div>
-        </div>
+        </Form.Item>
 
         {/* Turnstile component */}
         <div className="my-4">
@@ -202,47 +199,45 @@ export const EmailRegisterForm: React.FC = () => {
         </div>
 
         {/* Submit button */}
-        <button
-          type="submit"
-          disabled={isButtonDisabled || isSuccess}
-          className={`w-full text-white py-3 rounded-lg transition-colors font-medium flex items-center justify-center gap-2 
-            ${
-              isButtonDisabled || isSuccess
-                ? 'bg-gray-400 cursor-not-allowed'
-                : 'bg-blue-600 hover:bg-blue-700'
-            }`}
-        >
-          {(isSubmitting || isEmailLoading) && <Loader className="animate-spin w-5 h-5" />}
-          {isSubmitting || isEmailLoading
-            ? t('creatingAccount', { ns: 'auth' })
-            : t('createAccount', { ns: 'auth' })}
-        </button>
-      </form>
+        <Form.Item className="mb-0">
+          <Button
+            type="primary"
+            htmlType="submit"
+            size="large"
+            block
+            loading={isSubmitting || isEmailLoading}
+            disabled={isButtonDisabled || isSuccess}
+          >
+            {isSubmitting || isEmailLoading
+              ? t('creatingAccount', { ns: 'auth' })
+              : t('createAccount', { ns: 'auth' })}
+          </Button>
+        </Form.Item>
+      </Form>
 
-      {/* 6. Success Modal */}
-      <Dialog open={isSuccess} onOpenChange={(open) => !open && handleGoHome()}>
-        <DialogContent className="sm:max-w-md text-center">
-          <DialogHeader>
-            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-green-100 mb-4">
-              <CheckCircle className="h-6 w-6 text-green-600" />
-            </div>
-            <DialogTitle className="text-center text-xl">
-              {t('registrationSuccess', { ns: 'auth', defaultValue: '註冊成功！' })}
-            </DialogTitle>
-            <DialogDescription className="text-center pt-2">
-              {t('accountCreatedDesc', {
-                ns: 'auth',
-                defaultValue: '您的帳號已成功建立。請前往首頁開始使用。',
-              })}
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter className="sm:justify-center mt-4">
-            <Button type="button" className="w-full sm:w-auto min-w-[120px]" onClick={handleGoHome}>
+      {/* Success Modal */}
+      <Modal
+        open={isSuccess}
+        onCancel={handleGoHome}
+        footer={null}
+        centered
+        maskClosable={false}
+        width={400}
+      >
+        <Result
+          status="success"
+          title={t('registrationSuccess', { ns: 'auth', defaultValue: '註冊成功！' })}
+          subTitle={t('accountCreatedDesc', {
+            ns: 'auth',
+            defaultValue: '您的帳號已成功建立。請前往首頁開始使用。',
+          })}
+          extra={[
+            <Button type="primary" key="home" onClick={handleGoHome} block>
               {t('goToHome', { ns: 'common', defaultValue: '前往首頁' })}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+            </Button>,
+          ]}
+        />
+      </Modal>
     </>
   );
 };

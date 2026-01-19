@@ -1,7 +1,7 @@
 import { authApi } from '@/api/Auth/authApi';
 import { useMutation } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import toast from 'react-hot-toast';
+import message from 'antd/es/message';
 
 export const useEmailSend = () => {
   const { t } = useTranslation('toast');
@@ -11,11 +11,11 @@ export const useEmailSend = () => {
       return await authApi.sendVerifyEmail();
     },
     onSuccess: (data: any) => {
-      toast.success(t('verificationEmailSentPleaseCheckYourInbox'));
+      message.success(t('verificationEmailSentPleaseCheckYourInbox'));
     },
     onError: (error) => {
       console.error('send Verify Email Failed:', error);
-      toast.error(t('sendVerifyEmailFailedPleaseTryAgain', { ns: 'toast' }));
+      message.error(t('sendVerifyEmailFailedPleaseTryAgain', { ns: 'toast' }));
     },
   });
 

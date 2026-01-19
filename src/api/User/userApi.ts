@@ -1,11 +1,11 @@
-import { privateClient } from '@/api/api-client';
-
+import { getAccessToken, privateClient } from '@/api/api-client';
 export const userApi = {
-  getProfile: () => {
-    if (!localStorage.getItem('accessToken')) {
-      return null;
+  getProfile: async () => {
+    const token = getAccessToken();
+    if (!token) {
+      throw new Error('No access token found');
     }
-    return privateClient.get('/users/me');
+    const response = await privateClient.get('/users/me');
+    return response;
   },
-  //updateProfile: (data) => privateClient.put('/user/profile', data),
 };

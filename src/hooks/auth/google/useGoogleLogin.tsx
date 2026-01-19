@@ -11,7 +11,9 @@ import {
 } from '@/features/auth/google/googleEnv';
 import { authApi } from '@/api/Auth/authApi';
 import { useTranslation } from 'react-i18next';
-import { toast } from 'react-hot-toast';
+import { message } from 'antd';
+import { fetchUserProfile } from '../useAuth';
+
 import { setAccessToken } from '@/api/api-client';
 
 export const useGoogleLogin = () => {
@@ -30,19 +32,27 @@ export const useGoogleLogin = () => {
       sessionStorage.removeItem('code_verifier');
       return await authApi.loginWithGoogle(code, verifier);
     },
-    onSuccess: (data: any) => {
+    onSuccess: async (data: any) => {
       setAccessToken(data.data.accessToken);
-
-      queryClient.invalidateQueries({ queryKey: ['auth-user'] });
+      // Invalidate and refetch user data
+      await queryClient.ensureQueryData({
+        queryKey: ['auth-user'],
+        queryFn: fetchUserProfile,
+      });
       hasRun.current = false;
       setIsAuthorizing(false);
-      navigate('/dashboard');
+      setTimeout(() => {
+        navigate('/dashboard');
+      }, 500);
+
+      message.success(t('loginSuccessfulWelcomeBack'));
     },
     onError: (error) => {
       console.error('Login Failed:', error);
-      toast.error(t('loginFailedPleaseTryAgain'));
+      message.error(t('loginFailedPleaseTryAgain'));
       hasRun.current = false;
       setIsAuthorizing(false);
+      message.error(t('loginFailedPleaseTryAgain'));
     },
   });
 

@@ -3,17 +3,18 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { QueryClientProvider as QueryChientProvider } from '@tanstack/react-query';
 import routes from '@/router/index';
-import { Toaster } from 'react-hot-toast';
 import '@/global.css';
 import '@/features/i18n/config.js';
-import queryClient from '@/api/queryClient';
+import queryClient from '@/config/queryClient';
+import { App as AntdApp } from 'antd';
 
 const router = createBrowserRouter(routes);
 
 createRoot(document.getElementById('root')!).render(
-  <QueryChientProvider client={queryClient}>
-    <RouterProvider router={router}></RouterProvider>
-    <ReactQueryDevtools initialIsOpen={false} />
-    <Toaster position="top-center" reverseOrder={false} />
-  </QueryChientProvider>,
+  <AntdApp>
+    <QueryChientProvider client={queryClient}>
+      <RouterProvider router={router}></RouterProvider>
+      <ReactQueryDevtools initialIsOpen={false} />
+    </QueryChientProvider>
+  </AntdApp>,
 );
