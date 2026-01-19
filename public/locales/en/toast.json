@@ -6,5 +6,6 @@
     "verifierNotFoundPleaseTryAgain": "Verifier code not found, please try again.",
     "verifyFailedPleaseTryAgain": "Verification failed, please try again.",
     "sendVerifyEmailFailedPleaseTryAgain": "Send verify email failed, please try again.",
-    "verificationEmailSentPleaseCheckYourInbox": "Verification email sent, please check your inbox."
+    "verificationEmailSentPleaseCheckYourInbox": "Verification email sent, please check your inbox.",
+    "loginSuccessfulWelcomeBack": "Login successful, welcome back!"
 }
