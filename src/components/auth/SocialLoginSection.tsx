@@ -2,7 +2,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Flex } from 'antd';
 import GoogleIcon from '@/assets/svg/GoogleIcon';
-import GitHubIcon from '@/assets/svg/GitHubicon';
+import GitHubIcon from '@/assets/svg/GitHubIcon';
 
 interface Props {
   onGoogleLogin?: () => void;
