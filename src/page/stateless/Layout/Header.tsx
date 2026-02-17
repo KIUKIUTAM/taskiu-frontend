@@ -52,7 +52,7 @@ const Header: React.FC = () => {
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+      className={`sticky top-0 left-0 right-0 z-50 transition-all duration-300 ${
         isScrolled
           ? 'bg-white/98 shadow-xl backdrop-blur-md'
           : 'bg-white/95 shadow-md backdrop-blur-sm'
@@ -61,12 +61,12 @@ const Header: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 md:h-20">
           {/* Logo Section */}
-          <div
-            className="flex items-center cursor-pointer group"
-            onClick={() => navigate('/dashboard')}
-          >
+              <div className="flex items-center cursor-pointer group">
             <div className="flex items-center gap-2">
-              <span className="text-2xl md:text-3xl font-bold text-blue-950 filter drop-shadow-lg">
+                  <span
+                    className="text-2xl md:text-3xl font-bold text-blue-950 filter drop-shadow-lg"
+                    onClick={() => navigate('/')}
+                  >
                 TasKiu
               </span>
             </div>

@@ -65,12 +65,12 @@ const Header: React.FC = () => {
     <ConfigProvider
       theme={{
         token: {
-          colorPrimary: '#172554', // 對應 tailwind 的 blue-950
-          borderRadius: 6, // 稍微圓潤一點，但不要全圓
+          colorPrimary: '#172554',
+          borderRadius: 6,
         },
         components: {
           Button: {
-            controlHeight: 40, // 讓按鈕稍微高一點，看起來比較大氣
+            controlHeight: 40,
           },
         },
       }}
@@ -97,7 +97,7 @@ const Header: React.FC = () => {
                 </div>
               </div>
 
-              {/* Desktop Navigation (保持原樣) */}
+              {/* Desktop Navigation */}
               <nav className="hidden lg:flex items-center space-x-1 ml-16">
                 {navItems.map((item) => (
                   <button
@@ -114,17 +114,13 @@ const Header: React.FC = () => {
               {/* Action Buttons - Desktop */}
               <div className="hidden lg:flex items-center gap-3">
                 {accessToken ? (
-                  <Button type="primary" onClick={() => navigate('/dashboard')}>
+                  <Button type="default" className="!font-bold px-6" onClick={() => navigate('/dashboard')}>
                     {t('startUsing')}
                   </Button>
                 ) : (
-                  /* 
-                     這裡示範了兩種按鈕風格，您可以選擇一種：
-                     1. type="default": 白底黑字帶邊框 (較低調)
-                     2. type="primary": 實心藍色 (較顯眼)
-                  */
+
                   <Button
-                    type="default" // 改成 'default' 試試看效果
+                    type="default"
                     onClick={() => setIsModalOpen(true)}
                     className="!font-bold px-6"
                   >
@@ -175,14 +171,15 @@ const Header: React.FC = () => {
               {/* Mobile Action Buttons */}
               <div className="pt-4 mt-2 border-t border-gray-100 flex flex-col gap-3">
                 {accessToken ? (
-                  <Button type="primary" block size="large" onClick={() => navigate('/dashboard')}>
+                  <Button type="default" className="!font-bold px-6" block size="large" onClick={() => navigate('/dashboard')}>
                     {t('startUsing')}
                   </Button>
                 ) : (
                   <Button
-                    type="primary" // 手機版通常用 Primary 比較好點擊
+                    type="default"
                     block
                     size="large"
+                    className="!font-bold px-6"
                     onClick={() => {
                       setIsModalOpen(true);
                       setIsMobileMenuOpen(false);
