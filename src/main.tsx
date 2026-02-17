@@ -4,11 +4,14 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { QueryClientProvider as QueryChientProvider } from '@tanstack/react-query';
 import routes from '@/router/index';
 import '@/global.css';
-import '@/features/i18n/config.js';
+import '@/config/i18n/config.js';
 import queryClient from '@/config/queryClient';
 import { App as AntdApp } from 'antd';
 
-const router = createBrowserRouter(routes);
+const router = createBrowserRouter(routes, {
+  basename: "/taskiu"
+});
+
 
 createRoot(document.getElementById('root')!).render(
   <AntdApp>

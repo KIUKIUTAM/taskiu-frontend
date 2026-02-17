@@ -45,8 +45,8 @@ const Header: React.FC = () => {
   const navItems = isVerified
     ? [
         { label: t('home'), href: '/dashboard' },
-        { label: t('missions'), href: '/dashboard/missions' },
-        { label: t('team'), href: '/dashboard/team' },
+        { label: t('missions'), href: '/missions' },
+        { label: t('team'), href: '/team' },
       ]
     : [];
 
