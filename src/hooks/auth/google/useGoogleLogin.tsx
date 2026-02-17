@@ -8,7 +8,7 @@ import {
   REDIRECT_URI,
   AUTH_ENDPOINT,
   SCOPE,
-} from '@/features/auth/google/googleEnv';
+} from '@/components/auth/google/googleEnv';
 import { authApi } from '@/api/Auth/authApi';
 import { useTranslation } from 'react-i18next';
 import { message } from 'antd';
@@ -59,21 +59,18 @@ export const useGoogleLogin = () => {
   const { mutate } = loginMutation;
 
   useEffect(() => {
-    const handleMessage = (event: MessageEvent) => {
-      if (event.origin !== window.location.origin) return;
+    const channel = new BroadcastChannel('auth_channel');
 
+    channel.onmessage = (event) => {
       if (event.data.type === 'GOOGLE_LOGIN_SUCCESS' && event.data.code) {
-        const incomingCode = event.data.code;
-
         if (hasRun.current) return;
         hasRun.current = true;
 
-        mutate(incomingCode);
+        mutate(event.data.code);
       }
     };
 
-    window.addEventListener('message', handleMessage);
-    return () => window.removeEventListener('message', handleMessage);
+    return () => channel.close();
   }, [mutate]);
 
   const startGoogleLogin = useCallback(async () => {

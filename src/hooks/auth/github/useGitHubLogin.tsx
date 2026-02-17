@@ -8,7 +8,7 @@ import {
   REDIRECT_URI,
   AUTH_ENDPOINT,
   SCOPE,
-} from '@/features/auth/github/githubEnv';
+} from '@/components/auth/github/githubEnv';
 import { authApi } from '@/api/Auth/authApi';
 import { useTranslation } from 'react-i18next';
 import { setAccessToken } from '@/api/api-client';
@@ -57,23 +57,19 @@ export const useGitHubLogin = () => {
   const { mutate } = loginMutation;
 
   useEffect(() => {
-    const handleMessage = (event: MessageEvent) => {
-      if (event.origin !== window.location.origin) return;
+    const channel = new BroadcastChannel('auth_channel');
 
+    channel.onmessage = (event) => {
       if (event.data.type === 'GITHUB_LOGIN_SUCCESS' && event.data.code) {
-        const incomingCode = event.data.code;
-
         if (hasRun.current) return;
         hasRun.current = true;
 
-        mutate(incomingCode);
+        mutate(event.data.code);
       }
     };
 
-    window.addEventListener('message', handleMessage);
-    return () => window.removeEventListener('message', handleMessage);
+    return () => channel.close();
   }, [mutate]);
-
   const startGitHubLogin = useCallback(async () => {
     setIsAuthorizing(true);
     const verifier = generateCodeVerifier();
