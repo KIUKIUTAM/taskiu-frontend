@@ -30,5 +30,6 @@
   "blog": "Blog",
   "startUsing": "Start",
   "loading": "Loading",
-  "back": "Back"
+  "back": "Back",
+  "loginSuccess": "Login successful, redirecting..."
 }

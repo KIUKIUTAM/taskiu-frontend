@@ -30,5 +30,6 @@
   "blog": "部落格",
   "startUsing": "開始使用",
   "loading": "載入中",
-  "back": "返回"
+  "back": "返回",
+  "loginSuccess": "登入成功，正在跳轉..."
 }
