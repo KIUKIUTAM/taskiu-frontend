@@ -3,15 +3,16 @@ import react from '@vitejs/plugin-react';
 import tsconfigPaths from 'vite-tsconfig-paths';
 import tailwindcss from '@tailwindcss/vite';
 
-// https://vite.dev/config/
 export default defineConfig({
+  base: '/taskiu/',
   plugins: [react(), tsconfigPaths(), tailwindcss()],
   server: {
-    // Setup proxy for API requests, only in development
+    open: '/taskiu/',
     proxy: {
-      '/api': {
+      '/taskiu/api': {
         target: 'http://localhost:8088',
         changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/taskiu\/api/, '/api'),
       },
     },
   },
