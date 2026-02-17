@@ -7,6 +7,7 @@ import type { TFunction } from 'i18next';
 import { Turnstile } from '@marsidev/react-turnstile';
 import { useNavigate } from 'react-router-dom';
 import { useEmailRegister } from '@/hooks/auth/useEmailRegister';
+import {TURNSTILE_SITE_KEY} from '@/config/TurnstileProperty'
 
 import { Form, Input, Button, Checkbox, Modal, Result, message, theme } from 'antd';
 
@@ -35,7 +36,7 @@ export const EmailRegisterForm: React.FC = () => {
   const { t } = useTranslation(['auth', 'common']);
   const navigate = useNavigate();
   const [token, setToken] = useState<string | null>(null);
-  const SITE_KEY = '0x4AAAAAACLC2eG_l7H3PQ5A';
+  
 
   const { token: themeToken } = theme.useToken();
   const { login: emailRegister, isLoading: isEmailLoading, isSuccess } = useEmailRegister();
@@ -189,7 +190,7 @@ export const EmailRegisterForm: React.FC = () => {
         <div className="my-4">
           {!isSuccess && (
             <Turnstile
-              siteKey={SITE_KEY}
+              siteKey={TURNSTILE_SITE_KEY}
               onSuccess={(token) => setToken(token)}
               onError={() => setToken(null)}
               onExpire={() => setToken(null)}
