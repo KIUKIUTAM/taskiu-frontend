@@ -39,24 +39,24 @@ export const useEmailRegister = () => {
     onError: (error: AxiosError<ProblemDetail>) => {
       console.error('Register Failed:', error);
 
-      // 1. 檢查是否有 response (避免網路斷線等沒有 response 的情況)
+      // 1. Check if there is a response (avoid cases like network disconnection)
       if (error.response) {
         const status = error.response.status;
-        const problemDetail = error.response.data; // 這就是後端回傳的 ProblemDetail JSON
+        const problemDetail = error.response.data; // This is the ProblemDetail JSON returned by backend
 
-        // 2. 判斷 HTTP Status Code
+        // 2. Check HTTP Status Code
         if (status === 409) {
-          // 針對 Email 已存在的特定處理
-          // 你可以在 i18n 檔中加一個 'emailAlreadyExists'
+          // Specific handling for Email already exists
+          // You can add 'emailAlreadyExists' in i18n file
           message.error(t('emailAlreadyExists', { ns: 'toast' }));
           return;
         }
 
-        // 也可以直接顯示後端回傳的 detail 訊息 (如果有需要)
+        // Or directly display the detail message returned by backend (if needed)
         // message.error(problemDetail.detail);
       }
 
-      // 3. 其他錯誤 (500, 400, 網路錯誤等) 的預設處理
+      // 3. Default handling for other errors (500, 400, network errors, etc.)
       message.error(t('registerFailedPleaseTryAgain', { ns: 'toast' }));
     },
   });

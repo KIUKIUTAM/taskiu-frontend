@@ -89,7 +89,7 @@ export const EmailRegisterForm: React.FC = () => {
         className="w-full"
         requiredMark={false}
       >
-        {/* Email Field - 將 Form.Item 移入 Controller 內部 */}
+        {/* Email Field - Move Form.Item inside Controller */}
         <Controller
           name="email"
           control={control}

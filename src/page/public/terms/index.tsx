@@ -8,15 +8,15 @@ const TermsPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      {/* 卡片容器 */}
+      {/* Card Container */}
       <div className="max-w-3xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100">
-        {/* 標題區域 Header */}
+        {/* Header Area */}
         <div className="bg-white px-6 py-8 sm:px-10 border-b border-gray-200">
           <h1 className="text-3xl font-bold text-gray-900 tracking-tight">{t('title')}</h1>
           <p className="mt-2 text-sm text-gray-500">{t('lastUpdated')}</p>
         </div>
 
-        {/* 內容區域 Content */}
+        {/* Content Area */}
         <div className="px-6 py-8 sm:px-10 space-y-8">
           {Array.isArray(sections) ? (
             sections.map((section) => (

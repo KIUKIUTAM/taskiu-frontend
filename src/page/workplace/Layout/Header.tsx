@@ -38,10 +38,10 @@ const Header: React.FC = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // 1. 判斷是否已驗證
+  // 1. Check if verified
   const isVerified = !!user?.verified;
 
-  // 2. 如果未驗證，navItems 為空陣列
+  // 2. If not verified, navItems is empty
   const navItems = isVerified
     ? [
         { label: t('home'), href: '/dashboard' },
@@ -122,7 +122,7 @@ const Header: React.FC = () => {
               </div>
             </div>
 
-            {/* Desktop Navigation - 嚴格保留原本的 Tailwind 動畫寫法 */}
+            {/* Desktop Navigation - Strictly keep original Tailwind animation */}
             <nav className="hidden lg:flex items-center space-x-1 ml-16">
               {navItems.map((item) => (
                 <button
@@ -131,7 +131,7 @@ const Header: React.FC = () => {
                   className="relative px-4 py-2 text-gray-700 font-medium text-sm xl:text-base hover:text-blue-950 transition-colors duration-300 group"
                 >
                   {item.label}
-                  {/* 下面這行 span 就是負責底線動畫的關鍵 */}
+                  {/* The span below is key for the underline animation */}
                   <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-950 group-hover:w-full transition-all duration-100"></span>
                 </button>
               ))}
@@ -173,7 +173,7 @@ const Header: React.FC = () => {
           </div>
         </div>
 
-        {/* Mobile Navigation - 內部使用 Antd Button */}
+        {/* Mobile Navigation - Internally use Antd Button */}
         <div
           className={`lg:hidden overflow-hidden transition-all duration-300 ease-in-out bg-white border-t border-gray-100 ${
             isMobileMenuOpen ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0'
@@ -183,7 +183,7 @@ const Header: React.FC = () => {
             {navItems.map((item) => (
               <Button
                 key={item.href}
-                type="text" // 使用 text 類型讓它看起來像列表項
+                type="text" // Use text type to make it look like list item
                 block
                 className="text-left justify-start h-12 text-base font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-950"
                 onClick={() => {

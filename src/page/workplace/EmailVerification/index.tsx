@@ -4,24 +4,24 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { Button, Card, ConfigProvider, Typography, Input, theme, GetProps } from 'antd';
 
-// 假設這些 hooks 的路徑不變
+// Assume hook paths are unchanged
 import { useEmailSend } from '@/hooks/auth/useEmailSend';
 import { useEmailVerify } from '@/hooks/auth/useEmailVerify';
 import { useAuth } from '@/hooks/auth/useAuth';
 
 const { Title, Text } = Typography;
 
-// 定義 OTP Input 的 Props 類型 (Antd v5.13+ / v6)
+// Define OTP Input Props type (Antd v5.13+ / v6)
 type OTPProps = GetProps<typeof Input.OTP>;
 
 const EmailVerification = () => {
   const { t } = useTranslation(['common', 'auth']);
   const navigate = useNavigate();
 
-  // 使用 Antd 的 token 來獲取當前主題變數 (如果需要)
+  // Use Antd token to get current theme variables (if needed)
   const { token } = theme.useToken();
 
-  // 狀態管理：現在只需要一個 string，不需要 array
+  // State management: only need one string now, no array
   const [otpValue, setOtpValue] = useState<string>('');
   const [timer, setTimer] = useState(0);
 
@@ -31,14 +31,14 @@ const EmailVerification = () => {
 
   const showSuccessUI = isVerifySuccess || (user?.verified && isVerifySuccess);
 
-  // 導航邏輯
+  // Navigation logic
   useEffect(() => {
     if (user?.verified && !isVerifySuccess) {
       navigate('/dashboard', { replace: true });
     }
   }, [user, isVerifySuccess, navigate]);
 
-  // 計時器邏輯
+  // Timer logic
   useEffect(() => {
     let interval: number | undefined;
     if (timer > 0) {
@@ -49,7 +49,7 @@ const EmailVerification = () => {
     return () => clearInterval(interval);
   }, [timer]);
 
-  // 處理發送驗證碼
+  // Handle sending verification code
   const handleSendCode = () => {
     if (timer > 0 || isSending) return;
     setTimer(60);
@@ -57,19 +57,19 @@ const EmailVerification = () => {
     console.log('Sending code...');
   };
 
-  // 處理提交
+  // Handle submission
   const handleSubmit = () => {
     if (otpValue.length === 6) {
       verifyEmail(otpValue);
     }
   };
 
-  // Antd Input.OTP 的 onChange 事件
+  // Antd Input.OTP onChange event
   const handleOtpChange: OTPProps['onChange'] = (text) => {
     setOtpValue(text);
   };
 
-  // 渲染重發按鈕內容
+  // Render resend button content
   const renderResendButton = () => {
     if (timer > 0) {
       return <span className="text-gray-400">{timer}s</span>;
@@ -83,7 +83,7 @@ const EmailVerification = () => {
   };
 
   return (
-    // 使用 ConfigProvider 覆蓋 Antd 默認主題色以匹配原本的藍色風格
+    // Use ConfigProvider to override Antd default theme color to match original blue style
     <ConfigProvider
       theme={{
         token: {

@@ -22,7 +22,7 @@ const Header: React.FC = () => {
   const { t } = useTranslation('common');
   const navigate = useNavigate();
 
-  // 取得 Antd 的 token (如果需要用到 JS 變數控制顏色)
+  // Get Antd token (if needed to use JS variables to control color)
   const { token } = theme.useToken();
 
   const accessToken = getAccessToken();
@@ -132,7 +132,7 @@ const Header: React.FC = () => {
                 </div>
               </div>
 
-              {/* Mobile Menu Button - 改用 Antd Button Icon */}
+              {/* Mobile Menu Button - Use Antd Button Icon */}
               <div className="flex lg:hidden items-center gap-2">
                 <LanguageChangeButton />
                 <Button
@@ -146,7 +146,7 @@ const Header: React.FC = () => {
             </div>
           </div>
 
-          {/* Mobile Navigation - 保持原本的下拉邏輯，但內部用 Antd */}
+          {/* Mobile Navigation - Keep original dropdown logic, but use Antd internally */}
           <div
             className={`lg:hidden overflow-hidden transition-all duration-300 ease-in-out bg-white border-t border-gray-100 ${
               isMobileMenuOpen ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0'

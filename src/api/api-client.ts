@@ -1,6 +1,6 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
 
-// 基礎設定
+// Basic settings
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 let _accessToken: string | null = localStorage.getItem('accessToken');
@@ -74,11 +74,11 @@ privateClient.interceptors.response.use(
 
     if (!originalRequest) return Promise.reject(error);
 
-    // 處理 401 錯誤
+    // Handle 401 error
     if (error.response?.status === 401 && !originalRequest._retry) {
       console.log('401 Error detected, starting refresh process...');
 
-      // 如果正在刷新中，將請求加入佇列等待
+      // If refreshing, add request to queue
       if (isRefreshing) {
         console.log('Already refreshing, adding to queue...');
         return new Promise(function (resolve, reject) {
@@ -98,36 +98,36 @@ privateClient.interceptors.response.use(
 
       try {
         console.log('Attempting to refresh token...');
-        // 1. 呼叫 Refresh Token API
+        // 1. Call Refresh Token API
         const { data } = await publicClient.post('/auth/refresh-token');
 
-        // 2. 儲存新 Token
+        // 2. Save new Token
         const newAccessToken = data.accessToken;
         setAccessToken(newAccessToken);
         console.log('Token refreshed successfully');
 
-        // 3. 處理佇列中的請求
+        // 3. Process requests in queue
         processQueue(null, newAccessToken);
 
-        // 4. 重試當前這個原本失敗的請求
+        // 4. Retry the original failed request
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
         return privateClient(originalRequest);
       } catch (refreshError) {
         console.log('=== REFRESH TOKEN FAILED - REDIRECTING TO HOME ===');
         console.log('Refresh error:', refreshError);
 
-        // 刷新失敗 (Token 過期或無效)
+        // Refresh failed (Token expired or invalid)
         processQueue(refreshError, null);
 
         console.error('Refresh token failed', refreshError);
         localStorage.removeItem('accessToken');
 
-        // 這裡是重定向的地方！
+        // Redirect here!
         window.location.href = '/';
 
         return Promise.reject(refreshError);
       } finally {
-        // 無論成功失敗，結束刷新狀態
+        // End refreshing state regardless of success or failure
         isRefreshing = false;
       }
     }

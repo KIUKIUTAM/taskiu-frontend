@@ -4,7 +4,7 @@ import { Dropdown, Button } from 'antd';
 import type { MenuProps } from 'antd';
 import languageIcon from '@/assets/icons/language.svg';
 
-// 定義語言類型
+// Define language type
 type Locale = 'en' | 'tw';
 
 const LanguageChangeButton: React.FC = () => {
@@ -27,7 +27,7 @@ const LanguageChangeButton: React.FC = () => {
     },
   ];
 
-  // Icon 使用 bg-current，這樣它的顏色會自動跟隨 Button 的文字顏色
+  // Icon uses bg-current so its color automatically follows Button text color
   const CustomIcon = (
     <div
       className="w-5 h-5 bg-current transition-colors duration-100"

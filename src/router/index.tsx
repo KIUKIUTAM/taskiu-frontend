@@ -20,6 +20,7 @@ import TodoList from '@/page/Test/tailwindcss';
 import { GoogleCallbackPage } from '@/components/auth/google/GoogleCallback';
 import { GitHubCallbackPage } from '@/components/auth/github/GitHubCallback';
 import { AuthGuard } from '@/components/AuthGuard';
+import TaskDetailPage from '@/page/workplace/task';
 import { useTranslation } from 'react-i18next';
 
 const PageLoader = () => {
@@ -51,6 +52,10 @@ const routes = [
         path: 'contact',
         element: <Contact />,
       },
+      {
+        path: 'tasks',
+        element: <TaskDetailPage />,
+      }
     ],
   },
   {

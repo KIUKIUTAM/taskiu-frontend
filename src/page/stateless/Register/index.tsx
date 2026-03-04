@@ -22,7 +22,7 @@ export const RegisterPage: React.FC = () => {
         <span className="hidden lg:flex">{t('back', { ns: 'common' })}</span>
       </button>
 
-      {/* 頁面標題區 */}
+      {/* Page Title Area */}
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
           {t('createAccount', { ns: 'auth' })}
@@ -32,7 +32,7 @@ export const RegisterPage: React.FC = () => {
         </p>
       </div>
 
-      {/* 主要卡片區塊 */}
+      {/* Main Card Section */}
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md pb-10">
         <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
           <EmailRegisterForm />

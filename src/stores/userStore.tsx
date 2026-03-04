@@ -17,16 +17,16 @@ interface UserState {
   clearUser: () => void;
 }
 
-// 建立 Store
+// Create Store
 export const useUserStore = create<UserState>((set) => ({
-  // 1. 定義初始狀態 (State)
+  // 1. Define initial state (State)
   userId: null,
   email: null,
   name: null,
   picture: null,
   role: null,
 
-  // 2. 定義動作 (Actions)
+  // 2. Define actions (Actions)
   setUser: (user) =>
     set(() => ({
       userId: user.userId,

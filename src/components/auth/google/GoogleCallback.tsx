@@ -1,4 +1,4 @@
-// 只用 BroadcastChannel 的版本 (不支援 2022 年前的舊 iPhone)
+// Version using only BroadcastChannel (Not supported on old iPhones before 2022)
 import { useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';

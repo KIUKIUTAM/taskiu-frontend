@@ -2,14 +2,14 @@
 // 1. PKCE Utility Functions (Crypto Logic)
 // ==========================================
 
-// 生成隨機字符串 (Code Verifier)
+// Generate random string (Code Verifier)
 const generateCodeVerifier = (): string => {
   const array = new Uint8Array(32);
   globalThis.crypto.getRandomValues(array);
   return base64UrlEncode(array);
 };
 
-// 生成 Code Challenge (SHA-256 hash of Verifier)
+// Generate Code Challenge (SHA-256 hash of Verifier)
 const generateCodeChallenge = async (verifier: string): Promise<string> => {
   const encoder = new TextEncoder();
   const data = encoder.encode(verifier);
@@ -17,7 +17,7 @@ const generateCodeChallenge = async (verifier: string): Promise<string> => {
   return base64UrlEncode(new Uint8Array(digest));
 };
 
-// Base64URL Encoding (替換 + 為 -, / 為 _, 去掉 =)
+// Base64URL Encoding (Replace + with -, / with _, remove =)
 const base64UrlEncode = (array: Uint8Array): string => {
   let str = '';
   const bytes = Array.from(array);

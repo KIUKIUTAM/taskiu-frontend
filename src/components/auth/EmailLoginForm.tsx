@@ -1,5 +1,5 @@
 import React from 'react';
-import { useForm, Controller } from 'react-hook-form'; // 引入 Controller
+import { useForm, Controller } from 'react-hook-form'; // Import Controller
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useTranslation } from 'react-i18next';
@@ -23,11 +23,11 @@ interface Props {
 
 export const EmailLoginForm: React.FC<Props> = ({ onEmailLogin, isEmailLoading }) => {
   const { t } = useTranslation(['auth', 'common']);
-  const { token } = theme.useToken(); // 獲取主題顏色用於連結
+  const { token } = theme.useToken(); // Get theme color for links
 
-  // --- 2. 初始化 React Hook Form ---
+  // --- 2. Initialize React Hook Form ---
   const {
-    control, // 需要 control 給 Controller 使用
+    control, // Control needed for Controller
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<LoginFormValues>({
@@ -90,7 +90,7 @@ export const EmailLoginForm: React.FC<Props> = ({ onEmailLogin, isEmailLoading }
         />
       </Form.Item>
 
-      {/* 底部功能區 (Remember Me & Forgot Password) */}
+      {/* Bottom functional area (Remember Me & Forgot Password) */}
       <div className="flex items-center justify-between mb-6">
         <Form.Item noStyle>
           <Checkbox className="text-gray-600">{t('rememberMe', { ns: 'common' })}</Checkbox>
@@ -105,7 +105,7 @@ export const EmailLoginForm: React.FC<Props> = ({ onEmailLogin, isEmailLoading }
         </a>
       </div>
 
-      {/* 提交按鈕 */}
+      {/* Submit button */}
       <Form.Item className="mb-4">
         <Button
           type="default"
@@ -120,7 +120,7 @@ export const EmailLoginForm: React.FC<Props> = ({ onEmailLogin, isEmailLoading }
         </Button>
       </Form.Item>
 
-      {/* 註冊連結 */}
+      {/* Register link */}
       <div className="text-center text-sm text-gray-600">
         {t('dontHaveAccount', { ns: 'common' })}{' '}
         <a

@@ -5,27 +5,27 @@ export const AuthGuard = ({ children }: { children: React.ReactNode }) => {
   const location = useLocation();
   const { data: user, isLoading, isError, error } = useAuth();
 
-  // 1. 處理 Loading
+  // 1. Handle Loading
   if (isLoading) {
     return (
       <div className="flex h-screen items-center justify-center">
         <Loader2 className="animate-spin" />
-        <span className="ml-2">載入用戶資料中...</span>
+        <span className="ml-2">Loading user data...</span>
       </div>
     );
   }
 
-  // 2. 處理錯誤（包括 "No access token found"）
+  // 2. Handle errors (including "No access token found")
   if (isError) {
     return <Navigate to="/" state={{ from: location }} replace />;
   }
 
-  // 3. 如果沒有用戶數據
+  // 3. If no user data
   if (!user) {
     return <Navigate to="/" state={{ from: location }} replace />;
   }
 
-  // 4. 處理 email 驗證
+  // 4. Handle email verification
   if (!user.verified && location.pathname !== '/verify-email') {
     return <Navigate to="/verify-email" replace />;
   }

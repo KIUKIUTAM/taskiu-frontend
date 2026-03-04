@@ -4,17 +4,17 @@ import axios from 'axios';
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 function TodoList() {
   const { data, isPending, isError, error } = useQuery({
-    queryKey: ['todos'], // 1. 唯一的 Key (依賴陣列)
+    queryKey: ['todos'], // 1. Unique Key (dependency array)
     queryFn: async () => {
-      // 2. 獲取資料的函式 (必須回傳 Promise)
+      // 2. Function to fetch data (must return Promise)
       const res = await axios.get(`${BASE_URL}:3001/0`);
       return res.data;
     },
-    // staleTime: 10000, // 可選：個別設定過期時間
+    // staleTime: 10000, // Optional: Set expiration time individually
   });
 
-  if (isPending) return <span>載入中...</span>;
-  if (isError) return <span>發生錯誤: {error.message}</span>;
+  if (isPending) return <span>Loading...</span>;
+  if (isError) return <span>Error occurred: {error.message}</span>;
 
   return (
     <ul>
