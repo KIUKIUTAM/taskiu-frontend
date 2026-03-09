@@ -265,7 +265,7 @@ const TaskDetailPage: React.FC = () => {
                 </div>
                 <div>
                    <label className="text-xs text-gray-500 font-semibold block mb-1.5">Progress</label>
-                   <div className="flex items-center h-[30px]">
+                   <div className="flex items-center h-7.5">
                      <Progress percent={task.progress} size="small" steps={5} strokeColor={task.progress === 100 ? '#52c41a' : '#1890ff'} />
                    </div>
                 </div>
