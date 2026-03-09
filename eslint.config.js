@@ -6,31 +6,33 @@
 
 import js from '@eslint/js';
 import globals from 'globals';
-import tseslint from 'typescript-eslint';
+import tsParser from '@typescript-eslint/parser';
+import tsPlugin from '@typescript-eslint/eslint-plugin';
 import reactPlugin from 'eslint-plugin-react';
 import reactHooks from 'eslint-plugin-react-hooks';
 import eslintConfigPrettier from 'eslint-config-prettier';
 
-export default tseslint.config(
-  // 1. Global ignores (replaces .eslintignore)
+export default [
   { ignores: ['dist', 'node_modules', 'build'] },
-
-  // 2. Base configuration
+  js.configs.recommended,
   {
-    extends: [js.configs.recommended, ...tseslint.configs.recommended],
     files: ['**/*.{ts,tsx}'],
     languageOptions: {
       ecmaVersion: 2020,
+      sourceType: 'module',
+      parser: tsParser,
       globals: globals.browser,
     },
     plugins: {
+      '@typescript-eslint': tsPlugin,
       react: reactPlugin,
       'react-hooks': reactHooks,
     },
     rules: {
+      ...tsPlugin.configs.recommended.rules,
       ...reactPlugin.configs.recommended.rules,
       ...reactHooks.configs.recommended.rules,
-      'react/react-in-jsx-scope': 'off', // Not needed in React 17+
+      'react/react-in-jsx-scope': 'off',
       '@typescript-eslint/no-unused-vars': 'warn',
     },
     settings: {
@@ -39,7 +41,5 @@ export default tseslint.config(
       },
     },
   },
-
-  // 3. Prettier Config (Must be last to override other rules)
   eslintConfigPrettier,
-);
+];
