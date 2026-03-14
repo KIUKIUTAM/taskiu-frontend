@@ -13,6 +13,7 @@ const EmailVerification = lazy(() => import('@/page/workplace/EmailVerification/
 const DashboardHome = lazy(() => import('@/page/workplace/Home/index'));
 const MissionsPage = lazy(() => import('@/page/workplace/Missions/index'));
 const TeamPage = lazy(() => import('@/page/workplace/Team/index'));
+const TeamDetailPage = lazy(() => import('@/page/workplace/TeamDetail/index'));
 const TermsPage = lazy(() => import('@/page/public/terms/index'));
 import NotFound from '@/page/public/NotFound/index';
 
@@ -104,6 +105,14 @@ const routes = [
         element: (
           <Suspense fallback={<PageLoader />}>
             <TeamPage />
+          </Suspense>
+        ),
+      },
+      {
+        path: 'team/:teamId',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <TeamDetailPage />
           </Suspense>
         ),
       },

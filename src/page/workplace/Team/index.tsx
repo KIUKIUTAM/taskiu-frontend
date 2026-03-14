@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { Button, Card, Empty, Form, Input, Modal, Tag, Skeleton, Avatar, Tooltip } from 'antd';
 import {
   PlusOutlined,
@@ -79,6 +80,7 @@ const formatDate = (dateStr?: string) => {
 // ── Team Card ──────────────────────────────────────────────
 const TeamCard: React.FC<{ member: TeamMember }> = ({ member }) => {
   const { t } = useTranslation('common');
+  const navigate = useNavigate();
   const teamName = member.team?.teamName ?? t('unknownTeam');
   const teamDescription = member.team?.teamDescription ?? null;
   const teamPublicId = member.team?.teamId ?? '';
@@ -87,8 +89,17 @@ const TeamCard: React.FC<{ member: TeamMember }> = ({ member }) => {
   const avatarColor = getAvatarColor(teamName);
   const initials = teamName.slice(0, 2).toUpperCase();
 
+  const handleClick = () => {
+    if (teamPublicId) {
+      navigate(`/team/${teamPublicId}`);
+    }
+  };
+
   return (
-    <div className="group relative flex flex-col gap-4 rounded-xl border border-gray-100 bg-white p-5 shadow-sm transition-all duration-200 hover:border-blue-200 hover:shadow-md cursor-pointer">
+    <div 
+      onClick={handleClick}
+      className="group relative flex flex-col gap-4 rounded-xl border border-gray-100 bg-white p-5 shadow-sm transition-all duration-200 hover:border-blue-200 hover:shadow-md cursor-pointer"
+    >
       {/* 頂部：Avatar + 名稱 + Role */}
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-3">
@@ -124,7 +135,7 @@ const TeamCard: React.FC<{ member: TeamMember }> = ({ member }) => {
       </div>
 
       {/* 描述 */}
-      <p className="text-sm text-gray-500 leading-relaxed line-clamp-2 min-h-[2.5rem]">
+      <p className="text-sm text-gray-500 leading-relaxed line-clamp-2 min-h-10">
         {teamDescription ?? (
           <span className="italic text-gray-300">{t('noDescription')}</span>
         )}
