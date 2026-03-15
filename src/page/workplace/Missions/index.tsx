@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface Mission {
   id: number;
@@ -8,18 +9,19 @@ interface Mission {
 }
 
 export const Missions: React.FC = () => {
+  const { t } = useTranslation('page.workplace.missions');
   const [missions, setMissions] = useState<Mission[]>([
-    { id: 1, title: 'Learn TypeScript', description: 'Master TypeScript basics', completed: false },
+    { id: 1, title: t('items.learnTsTitle'), description: t('items.learnTsDesc'), completed: false },
     {
       id: 2,
-      title: 'Build a React App',
-      description: 'Create a functional React application',
+      title: t('items.buildReactTitle'),
+      description: t('items.buildReactDesc'),
       completed: false,
     },
     {
       id: 3,
-      title: 'Deploy to Production',
-      description: 'Deploy your app to a live server',
+      title: t('items.deployTitle'),
+      description: t('items.deployDesc'),
       completed: false,
     },
   ]);
@@ -34,7 +36,7 @@ export const Missions: React.FC = () => {
 
   return (
     <div className="missions-container">
-      <h1>Missions</h1>
+      <h1>{t('title')}</h1>
       <ul className="missions-list">
         {missions.map((mission) => (
           <li key={mission.id} className={mission.completed ? 'completed' : ''}>

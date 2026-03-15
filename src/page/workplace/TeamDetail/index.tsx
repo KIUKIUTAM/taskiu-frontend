@@ -52,9 +52,9 @@ const ROLE_CONFIG: Record<
   string,
   { color: string; icon: React.ReactNode; labelKey: string }
 > = {
-  OWNER: { color: 'gold', icon: <CrownOutlined />, labelKey: 'team.role.owner' },
-  ADMIN: { color: 'blue', icon: <SafetyCertificateOutlined />, labelKey: 'team.role.admin' },
-  MEMBER: { color: 'default', icon: <UserOutlined />, labelKey: 'team.role.member' },
+  OWNER: { color: 'gold', icon: <CrownOutlined />, labelKey: 'role.owner' },
+  ADMIN: { color: 'blue', icon: <SafetyCertificateOutlined />, labelKey: 'role.admin' },
+  MEMBER: { color: 'default', icon: <UserOutlined />, labelKey: 'role.member' },
 };
 
 // ─── Role Select Options ──────────────────────────────────────────────────────
@@ -65,7 +65,7 @@ const getRoleOptions = (t: (key: string) => string) => [
     label: (
       <Space>
         <SafetyCertificateOutlined className="text-blue-500" />
-        {t('team.role.admin')}
+        {t('role.admin')}
       </Space>
     ),
   },
@@ -74,7 +74,7 @@ const getRoleOptions = (t: (key: string) => string) => [
     label: (
       <Space>
         <UserOutlined className="text-gray-500" />
-        {t('team.role.member')}
+        {t('role.member')}
       </Space>
     ),
   },
@@ -89,7 +89,8 @@ interface MemberCardProps {
 }
 
 const MemberCard: React.FC<MemberCardProps> = ({ item, onRemove }) => {
-  const { t } = useTranslation('common');
+  const { t: tCommon } = useTranslation('common');
+  const { t: tPage } = useTranslation('page.teamDetail');
 
   const role = ROLE_CONFIG[item.role] ?? ROLE_CONFIG.MEMBER;
   const displayName = item.user?.name || item.user?.email || 'Unknown';
@@ -100,14 +101,14 @@ const MemberCard: React.FC<MemberCardProps> = ({ item, onRemove }) => {
     if (item.role === 'OWNER') return null;
     return (
       <Popconfirm
-        title={t('team.member.removeTitle')}
-        description={t('team.member.removeConfirm')}
+        title={tPage('member.removeTitle')}
+        description={tPage('member.removeConfirm')}
         onConfirm={() => onRemove(item.user.id)}
-        okText={t('common.confirm')}
-        cancelText={t('common.cancel')}
+        okText={tCommon('confirm')}
+        cancelText={tCommon('cancel')}
         okButtonProps={{ danger: true }}
       >
-        <Tooltip title={t('team.member.remove')}>
+        <Tooltip title={tPage('member.remove')}>
           <Button
             type="text"
             danger
@@ -139,7 +140,7 @@ const MemberCard: React.FC<MemberCardProps> = ({ item, onRemove }) => {
           <div className="flex items-center gap-2 flex-wrap">
             <span className="font-medium text-gray-800 truncate">{displayName}</span>
             <Tag icon={role.icon} color={role.color} className="text-xs m-0 leading-none">
-              {t(role.labelKey)}
+              {tPage(role.labelKey)}
             </Tag>
           </div>
           <Text type="secondary" className="text-xs truncate block">
@@ -162,17 +163,18 @@ interface ProjectCardProps {
 }
 
 const ProjectCard: React.FC<ProjectCardProps> = ({ project, onDelete }) => {
-  const { t } = useTranslation('common');
+  const { t: tCommon } = useTranslation('common');
+  const { t: tPage } = useTranslation('page.teamDetail');
 
   // Extracted from inline onClick to avoid nested ternary warnings
   const handleDelete = (e: React.MouseEvent) => {
     e.stopPropagation();
     Modal.confirm({
-      title: t('team.project.deleteTitle'),
-      content: t('team.project.deleteConfirm', { name: project.projectName }),
-      okText: t('common.delete'),
+      title: tPage('project.deleteTitle'),
+      content: tPage('project.deleteConfirm', { name: project.projectName }),
+      okText: tCommon('delete'),
       okType: 'danger',
-      cancelText: t('common.cancel'),
+      cancelText: tCommon('cancel'),
       onOk: () => onDelete(project.projectId),
     });
   };
@@ -210,10 +212,10 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, onDelete }) => {
 
             {/* Action buttons — visible on hover */}
             <div className="flex gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
-              <Tooltip title={t('common.settings')}>
+              <Tooltip title={tCommon('settings')}>
                 <Button type="text" size="small" icon={<SettingOutlined />} className="text-gray-400 hover:text-indigo-500" />
               </Tooltip>
-              <Tooltip title={t('common.delete')}>
+              <Tooltip title={tCommon('delete')}>
                 <Button type="text" size="small" danger icon={<DeleteOutlined />} onClick={handleDelete} />
               </Tooltip>
             </div>
@@ -223,7 +225,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, onDelete }) => {
             ellipsis={{ rows: 2 }}
             className="text-gray-400 text-xs mt-1 mb-0 leading-relaxed"
           >
-            {project.projectDescription || t('team.project.noDescription')}
+            {project.projectDescription || tPage('project.noDescription')}
           </Paragraph>
         </div>
       </div>
@@ -237,7 +239,8 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, onDelete }) => {
 const TeamDetailPage: React.FC = () => {
   const { teamId } = useParams<{ teamId: string }>();
   const navigate = useNavigate();
-  const { t } = useTranslation('common');
+  const { t: tCommon } = useTranslation('common');
+  const { t: tPage } = useTranslation('page.teamDetail');
 
   const [activeTab, setActiveTab] = useState('members');
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
@@ -302,10 +305,10 @@ const TeamDetailPage: React.FC = () => {
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
         <Empty
           image={Empty.PRESENTED_IMAGE_SIMPLE}
-          description={<Text type="secondary">{t('team.notFound')}</Text>}
+          description={<Text type="secondary">{tPage('notFound')}</Text>}
         />
         <Button type="primary" onClick={() => navigate(-1)}>
-          {t('common.back')}
+          {tCommon('back')}
         </Button>
       </div>
     );
@@ -335,9 +338,9 @@ const TeamDetailPage: React.FC = () => {
       );
     }
     return (
-      <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={t('team.member.empty')}>
+      <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={tPage('member.empty')}>
         <Button type="primary" icon={<UserAddOutlined />} onClick={() => setIsInviteModalOpen(true)}>
-          {t('team.member.inviteFirst')}
+          {tPage('member.inviteFirst')}
         </Button>
       </Empty>
     );
@@ -366,9 +369,9 @@ const TeamDetailPage: React.FC = () => {
       );
     }
     return (
-      <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={t('team.project.empty')}>
+      <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={tPage('project.empty')}>
         <Button type="primary" icon={<PlusOutlined />} onClick={() => setIsCreateProjectModalOpen(true)}>
-          {t('team.project.createFirst')}
+          {tPage('project.createFirst')}
         </Button>
       </Empty>
     );
@@ -381,7 +384,7 @@ const TeamDetailPage: React.FC = () => {
       label: (
         <span className="flex items-center gap-2 px-2">
           <TeamOutlined />
-          <span>{t('team.tabs.members')}</span>
+          <span>{tPage('tabs.members')}</span>
           {members && <Badge count={members.length} size="small" color="geekblue" overflowCount={99} />}
         </span>
       ),
@@ -389,9 +392,9 @@ const TeamDetailPage: React.FC = () => {
         <div className="px-6 py-4">
           <div className="flex justify-between items-center mb-5">
             <div>
-              <Title level={4} style={{ margin: 0 }}>{t('team.member.title')}</Title>
+              <Title level={4} style={{ margin: 0 }}>{tPage('member.title')}</Title>
               <Text type="secondary" className="text-sm">
-                {t('team.member.count', { count: members?.length ?? 0 })}
+                {tPage('member.count', { count: members?.length ?? 0 })}
               </Text>
             </div>
             <Button
@@ -400,7 +403,7 @@ const TeamDetailPage: React.FC = () => {
               onClick={() => setIsInviteModalOpen(true)}
               className="bg-indigo-500 hover:bg-indigo-600 border-none shadow-sm"
             >
-              {t('team.member.invite')}
+              {tPage('member.invite')}
             </Button>
           </div>
           {renderMembersContent()}
@@ -412,7 +415,7 @@ const TeamDetailPage: React.FC = () => {
       label: (
         <span className="flex items-center gap-2 px-2">
           <ProjectOutlined />
-          <span>{t('team.tabs.projects')}</span>
+          <span>{tPage('tabs.projects')}</span>
           {projects && <Badge count={projects.length} size="small" color="geekblue" overflowCount={99} />}
         </span>
       ),
@@ -420,9 +423,9 @@ const TeamDetailPage: React.FC = () => {
         <div className="px-6 py-4">
           <div className="flex justify-between items-center mb-5">
             <div>
-              <Title level={4} style={{ margin: 0 }}>{t('team.project.title')}</Title>
+              <Title level={4} style={{ margin: 0 }}>{tPage('project.title')}</Title>
               <Text type="secondary" className="text-sm">
-                {t('team.project.count', { count: projects?.length ?? 0 })}
+                {tPage('project.count', { count: projects?.length ?? 0 })}
               </Text>
             </div>
             <Button
@@ -431,7 +434,7 @@ const TeamDetailPage: React.FC = () => {
               onClick={() => setIsCreateProjectModalOpen(true)}
               className="bg-indigo-500 hover:bg-indigo-600 border-none shadow-sm"
             >
-              {t('team.project.create')}
+              {tPage('project.create')}
             </Button>
           </div>
           {renderProjectsContent()}
@@ -460,21 +463,21 @@ const TeamDetailPage: React.FC = () => {
             <div>
               <Title level={2} style={{ margin: 0, lineHeight: 1.2 }}>{team.teamName}</Title>
               <Text type="secondary" className="text-sm mt-1 block">
-                {team.teamDescription || t('team.noDescription')}
+                {team.teamDescription || tPage('noDescription')}
               </Text>
               {/* Quick-glance stats tags */}
               <div className="flex gap-2 mt-2">
                 <Tag color="geekblue" icon={<TeamOutlined />}>
-                  {t('team.member.count', { count: members?.length ?? 0 })}
+                  {tPage('member.count', { count: members?.length ?? 0 })}
                 </Tag>
                 <Tag color="purple" icon={<ProjectOutlined />}>
-                  {t('team.project.count', { count: projects?.length ?? 0 })}
+                  {tPage('project.count', { count: projects?.length ?? 0 })}
                 </Tag>
               </div>
             </div>
           </div>
           <Button icon={<SettingOutlined />} className="shrink-0 hover:border-indigo-400 hover:text-indigo-500">
-            {t('common.settings')}
+            {tCommon('settings')}
           </Button>
         </div>
       </div>
@@ -512,7 +515,7 @@ const TeamDetailPage: React.FC = () => {
         title={
           <div className="flex items-center gap-2 text-base">
             <UserAddOutlined className="text-indigo-500" />
-            <span>{t('team.member.inviteTitle')}</span>
+            <span>{tPage('member.inviteTitle')}</span>
           </div>
         }
         open={isInviteModalOpen}
@@ -525,8 +528,8 @@ const TeamDetailPage: React.FC = () => {
         <Form form={inviteForm} onFinish={handleInvite} layout="vertical">
           <Form.Item
             name="email"
-            label={t('common.email')}
-            rules={[{ required: true, type: 'email', message: t('validation.email') }]}
+            label={tCommon('email')}
+            rules={[{ required: true, type: 'email', message: tPage('validation.email') }]}
           >
             <Input
               prefix={<UserOutlined className="text-gray-300" />}
@@ -535,20 +538,20 @@ const TeamDetailPage: React.FC = () => {
             />
           </Form.Item>
 
-          <Form.Item name="role" label={t('team.member.role')} initialValue="MEMBER">
+          <Form.Item name="role" label={tPage('member.role')} initialValue="MEMBER">
             {/* Fix: Select.Option deprecated → use options prop instead */}
-            <Select size="large" options={getRoleOptions(t)} />
+            <Select size="large" options={getRoleOptions(tPage)} />
           </Form.Item>
 
           <div className="flex justify-end gap-2 pt-2">
-            <Button onClick={handleCloseInviteModal}>{t('common.cancel')}</Button>
+            <Button onClick={handleCloseInviteModal}>{tCommon('cancel')}</Button>
             <Button
               type="primary"
               htmlType="submit"
               loading={isAddingMember}
               className="bg-indigo-500 hover:bg-indigo-600 border-none"
             >
-              {t('team.member.sendInvite')}
+              {tPage('member.sendInvite')}
             </Button>
           </div>
         </Form>
@@ -560,7 +563,7 @@ const TeamDetailPage: React.FC = () => {
         title={
           <div className="flex items-center gap-2 text-base">
             <FolderOpenOutlined className="text-indigo-500" />
-            <span>{t('team.project.createTitle')}</span>
+            <span>{tPage('project.createTitle')}</span>
           </div>
         }
         open={isCreateProjectModalOpen}
@@ -573,20 +576,20 @@ const TeamDetailPage: React.FC = () => {
         <Form form={projectForm} onFinish={handleCreateProject} layout="vertical">
           <Form.Item
             name="name"
-            label={t('team.project.name')}
-            rules={[{ required: true, message: t('validation.projectName') }]}
+            label={tPage('project.name')}
+            rules={[{ required: true, message: tPage('validation.projectName') }]}
           >
             <Input
-              placeholder={t('team.project.namePlaceholder')}
+              placeholder={tPage('project.namePlaceholder')}
               size="large"
               prefix={<ProjectOutlined className="text-gray-300" />}
             />
           </Form.Item>
 
-          <Form.Item name="description" label={t('team.project.description')}>
+          <Form.Item name="description" label={tPage('project.description')}>
             <Input.TextArea
               rows={4}
-              placeholder={t('team.project.descriptionPlaceholder')}
+              placeholder={tPage('project.descriptionPlaceholder')}
               className="resize-none"
             />
           </Form.Item>
@@ -594,26 +597,26 @@ const TeamDetailPage: React.FC = () => {
           {/* File upload — beforeUpload returns false to prevent auto-upload */}
           <Form.Item
             name="file"
-            label={t('team.project.picture')}
+            label={tPage('project.picture')}
             valuePropName="fileList"
             getValueFromEvent={(e) => (Array.isArray(e) ? e : e?.fileList)}
           >
             <Upload maxCount={1} beforeUpload={() => false} listType="picture" accept="image/*">
               <Button icon={<UploadOutlined />} className="w-full">
-                {t('common.selectFile')}
+                {tCommon('selectFile')}
               </Button>
             </Upload>
           </Form.Item>
 
           <div className="flex justify-end gap-2 pt-2">
-            <Button onClick={handleCloseProjectModal}>{t('common.cancel')}</Button>
+            <Button onClick={handleCloseProjectModal}>{tCommon('cancel')}</Button>
             <Button
               type="primary"
               htmlType="submit"
               loading={isCreatingProject}
               className="bg-indigo-500 hover:bg-indigo-600 border-none"
             >
-              {t('team.project.createBtn')}
+              {tPage('project.createBtn')}
             </Button>
           </div>
         </Form>

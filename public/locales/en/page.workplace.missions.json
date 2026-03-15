@@ -1,0 +1,12 @@
+{
+  "title": "Missions",
+  "items": {
+    "learnTsTitle": "Learn TypeScript",
+    "learnTsDesc": "Master TypeScript basics",
+    "buildReactTitle": "Build a React App",
+    "buildReactDesc": "Create a functional React application",
+    "deployTitle": "Deploy to Production",
+    "deployDesc": "Deploy your app to a live server"
+  }
+}
+

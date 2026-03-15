@@ -19,7 +19,8 @@ const Header: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const { t } = useTranslation('common');
+  const { t: tCommon } = useTranslation('common');
+  const { t: tPage } = useTranslation('page.public.layoutHeader');
   const navigate = useNavigate();
 
   // Get Antd token (if needed to use JS variables to control color)
@@ -36,10 +37,10 @@ const Header: React.FC = () => {
   }, []);
 
   const navItems = [
-    { label: t('home'), href: '' },
-    { label: t('services'), href: 'services' },
-    { label: t('aboutUs'), href: 'about' },
-    { label: t('contact'), href: 'contact' },
+    { label: tPage('nav.home'), href: '' },
+    { label: tPage('nav.services'), href: 'services' },
+    { label: tPage('nav.about'), href: 'about' },
+    { label: tPage('nav.contact'), href: 'contact' },
   ];
 
   const { login: googleLogin, isLoading: isGoogleLoading } = useGoogleLogin();
@@ -115,7 +116,7 @@ const Header: React.FC = () => {
               <div className="hidden lg:flex items-center gap-3">
                 {accessToken ? (
                   <Button type="default" className="!font-bold px-6" onClick={() => navigate('/dashboard')}>
-                    {t('startUsing')}
+                    {tPage('startUsing')}
                   </Button>
                 ) : (
 
@@ -124,7 +125,7 @@ const Header: React.FC = () => {
                     onClick={() => setIsModalOpen(true)}
                     className="!font-bold px-6"
                   >
-                    {t('signIn', { ns: 'common' })}
+                    {tCommon('signIn')}
                   </Button>
                 )}
                 <div className="ml-2">
@@ -172,7 +173,7 @@ const Header: React.FC = () => {
               <div className="pt-4 mt-2 border-t border-gray-100 flex flex-col gap-3">
                 {accessToken ? (
                   <Button type="default" className="!font-bold px-6" block size="large" onClick={() => navigate('/dashboard')}>
-                    {t('startUsing')}
+                    {tPage('startUsing')}
                   </Button>
                 ) : (
                   <Button
@@ -185,7 +186,7 @@ const Header: React.FC = () => {
                       setIsMobileMenuOpen(false);
                     }}
                   >
-                    {t('signIn', { ns: 'common' })}
+                    {tCommon('signIn')}
                   </Button>
                 )}
               </div>

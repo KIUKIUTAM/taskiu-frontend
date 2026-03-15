@@ -1,0 +1,24 @@
+{
+  "pageSubtitle": "管理你的團隊與成員",
+  "refresh": "重新整理",
+  "createTeam": "建立團隊",
+  "noTeams": "目前沒有任何團隊",
+  "unknownTeam": "未知的團隊",
+  "noDescription": "沒有描述",
+  "joined": "加入",
+  "teams": "個團隊",
+  "role": {
+    "owner": "擁有者",
+    "admin": "管理員",
+    "member": "成員"
+  },
+  "form": {
+    "teamName": "團隊名稱",
+    "teamNameRequired": "請輸入團隊名稱",
+    "teamNameMin": "團隊名稱至少需要 2 個字",
+    "teamNamePlaceholder": "例如：工程團隊",
+    "teamDescription": "描述",
+    "teamDescriptionPlaceholder": "可選填描述"
+  }
+}
+

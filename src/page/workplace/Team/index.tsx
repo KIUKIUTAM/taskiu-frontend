@@ -79,9 +79,9 @@ const formatDate = (dateStr?: string) => {
 
 // ── Team Card ──────────────────────────────────────────────
 const TeamCard: React.FC<{ member: TeamMember }> = ({ member }) => {
-  const { t } = useTranslation('common');
+  const { t: tPage } = useTranslation('page.team');
   const navigate = useNavigate();
-  const teamName = member.team?.teamName ?? t('unknownTeam');
+  const teamName = member.team?.teamName ?? tPage('unknownTeam');
   const teamDescription = member.team?.teamDescription ?? null;
   const teamPublicId = member.team?.teamId ?? '';
   const joinedAt = formatDate(member.createdAt);
@@ -137,7 +137,7 @@ const TeamCard: React.FC<{ member: TeamMember }> = ({ member }) => {
       {/* 描述 */}
       <p className="text-sm text-gray-500 leading-relaxed line-clamp-2 min-h-10">
         {teamDescription ?? (
-          <span className="italic text-gray-300">{t('noDescription')}</span>
+          <span className="italic text-gray-300">{tPage('noDescription')}</span>
         )}
       </p>
 
@@ -147,7 +147,7 @@ const TeamCard: React.FC<{ member: TeamMember }> = ({ member }) => {
           <div className="flex items-center gap-1.5 text-xs text-gray-400">
             <CalendarOutlined className="text-gray-300" />
             <span>
-              {t('joined')} {joinedAt}
+              {tPage('joined')} {joinedAt}
             </span>
           </div>
         ) : (
@@ -174,7 +174,7 @@ const TeamCardSkeleton: React.FC = () => (
 
 // ── Stats Bar ──────────────────────────────────────────────
 const StatsBar: React.FC<{ teams: TeamMember[] }> = ({ teams }) => {
-  const { t } = useTranslation('common');
+  const { t: tPage } = useTranslation('page.team');
   const ownerCount = teams.filter((m) => m.role === 'OWNER').length;
   const adminCount = teams.filter((m) => m.role === 'ADMIN').length;
   const memberCount = teams.filter((m) => m.role === 'MEMBER').length;
@@ -182,7 +182,7 @@ const StatsBar: React.FC<{ teams: TeamMember[] }> = ({ teams }) => {
   return (
     <div className="flex items-center gap-4 text-sm text-gray-500">
       <span className="font-medium text-gray-700">
-        {teams.length} {t('teams')}
+        {teams.length} {tPage('teams')}
       </span>
       <span className="text-gray-200">|</span>
       {ownerCount > 0 && (
@@ -209,7 +209,8 @@ const StatsBar: React.FC<{ teams: TeamMember[] }> = ({ teams }) => {
 
 // ── Main Page ──────────────────────────────────────────────
 const TeamPage: React.FC = () => {
-  const { t } = useTranslation('common');
+  const { t: tCommon } = useTranslation('common');
+  const { t: tPage } = useTranslation('page.team');
   const [createOpen, setCreateOpen] = useState(false);
   const [form] = Form.useForm<CreateTeamFormValues>();
 
@@ -250,11 +251,11 @@ const TeamPage: React.FC = () => {
           <Empty
             image={Empty.PRESENTED_IMAGE_SIMPLE}
             description={
-              <span className="text-gray-400">{t('noTeams')}</span>
+              <span className="text-gray-400">{tPage('noTeams')}</span>
             }
           />
           <Button type="primary" icon={<PlusOutlined />} onClick={openCreate} size="large">
-            {t('createTeam')}
+            {tPage('createTeam')}
           </Button>
         </div>
       );
@@ -281,8 +282,8 @@ const TeamPage: React.FC = () => {
               <TeamOutlined className="text-xl" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">{t('team')}</h1>
-              <p className="text-sm text-gray-500">{t('teamPageSubtitle')}</p>
+              <h1 className="text-2xl font-bold text-gray-900">{tCommon('team')}</h1>
+              <p className="text-sm text-gray-500">{tPage('pageSubtitle')}</p>
             </div>
           </div>
 
@@ -292,10 +293,10 @@ const TeamPage: React.FC = () => {
               onClick={() => myTeamsQuery.refetch()}
               loading={myTeamsQuery.isFetching}
             >
-              {t('refresh')}
+              {tPage('refresh')}
             </Button>
             <Button type="primary" icon={<PlusOutlined />} onClick={openCreate}>
-              {t('createTeam')}
+              {tPage('createTeam')}
             </Button>
           </div>
         </div>
@@ -318,38 +319,38 @@ const TeamPage: React.FC = () => {
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-950 text-white">
               <TeamOutlined />
             </div>
-            <span>{t('createTeam')}</span>
+            <span>{tPage('createTeam')}</span>
           </div>
         }
         open={createOpen}
         onCancel={closeCreate}
         onOk={onCreate}
-        okText={t('create')}
-        cancelText={t('cancel')}
+        okText={tCommon('create')}
+        cancelText={tCommon('cancel')}
         confirmLoading={createTeamMutation.isPending}
         destroyOnHidden
         width={480}
       >
         <Form form={form} layout="vertical" requiredMark={false} className="mt-4">
           <Form.Item
-            label={t('teamName')}
+            label={tPage('form.teamName')}
             name="name"
             rules={[
-              { required: true, message: t('teamNameRequired') },
-              { min: 2, message: t('teamNameMin') },
+              { required: true, message: tPage('form.teamNameRequired') },
+              { min: 2, message: tPage('form.teamNameMin') },
             ]}
           >
             <Input
               prefix={<TeamOutlined className="text-gray-300" />}
-              placeholder={t('teamNamePlaceholder')}
+              placeholder={tPage('form.teamNamePlaceholder')}
               size="large"
             />
           </Form.Item>
 
-          <Form.Item label={t('teamDescription')} name="description">
+          <Form.Item label={tPage('form.teamDescription')} name="description">
             <Input.TextArea
               rows={4}
-              placeholder={t('teamDescriptionPlaceholder')}
+              placeholder={tPage('form.teamDescriptionPlaceholder')}
               showCount
               maxLength={200}
             />

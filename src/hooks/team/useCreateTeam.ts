@@ -6,16 +6,16 @@ import { teamApi, CreateTeamRequest } from '@/api/Team/teamApi';
 
 export const useCreateTeam = () => {
   const queryClient = useQueryClient();
-  const { t } = useTranslation('common');
+  const { t } = useTranslation('toast');
 
   return useMutation({
     mutationFn: (data: CreateTeamRequest) => teamApi.createTeam(data),
     onSuccess: async () => {
-      message.success(t('teamCreated'));
+      message.success(t('team.createSuccess'));
       await queryClient.invalidateQueries({ queryKey: ['teams', 'me'] });
     },
     onError: () => {
-      message.error(t('teamCreateFailed'));
+      message.error(t('team.createFailed'));
     },
   });
 };

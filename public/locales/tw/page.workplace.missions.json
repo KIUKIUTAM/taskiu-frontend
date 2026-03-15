@@ -1,0 +1,12 @@
+{
+  "title": "任務",
+  "items": {
+    "learnTsTitle": "學習 TypeScript",
+    "learnTsDesc": "掌握 TypeScript 基礎",
+    "buildReactTitle": "建立 React App",
+    "buildReactDesc": "建立一個可運作的 React 應用程式",
+    "deployTitle": "部署到正式環境",
+    "deployDesc": "將你的應用部署到線上伺服器"
+  }
+}
+
