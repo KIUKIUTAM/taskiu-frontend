@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
@@ -33,6 +33,7 @@ import {
   Space,
   Divider,
 } from 'antd';
+import type { UploadFile } from 'antd';
 import {
   useTeamDetail,
   useTeamMembers,
@@ -46,8 +47,15 @@ import { TeamRole } from '@/api/Team/teamApi';
 
 const { Title, Text, Paragraph } = Typography;
 
+// ─── Constants ────────────────────────────────────────────────────────────────
+// Moved outside component to avoid re-creation on every render
+
+const MEMBER_SKELETON_KEYS = ['ms-1', 'ms-2', 'ms-3', 'ms-4'] as const;
+const PROJECT_SKELETON_KEYS = ['ps-1', 'ps-2', 'ps-3', 'ps-4', 'ps-5', 'ps-6'] as const;
+
 // ─── Role Config ──────────────────────────────────────────────────────────────
 // Maps role keys to display color, icon, and i18n label key
+
 const ROLE_CONFIG: Record<
   string,
   { color: string; icon: React.ReactNode; labelKey: string }
@@ -57,8 +65,41 @@ const ROLE_CONFIG: Record<
   MEMBER: { color: 'default', icon: <UserOutlined />, labelKey: 'role.member' },
 };
 
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+interface TeamMemberUser {
+  id: string;
+  name?: string;
+  email?: string;
+  picture?: string;
+}
+
+interface TeamMember {
+  role: keyof typeof ROLE_CONFIG;
+  user: TeamMemberUser;
+}
+
+interface Project {
+  projectId: string;
+  projectName: string;
+  projectDescription?: string;
+  projectPictureUrl?: string;
+}
+
+interface InviteFormValues {
+  email: string;
+  role: TeamRole;
+}
+
+interface CreateProjectFormValues {
+  name: string;
+  description: string;
+  file?: UploadFile[];
+}
+
 // ─── Role Select Options ──────────────────────────────────────────────────────
 // Used in invite modal — avoids deprecated Select.Option children pattern
+
 const getRoleOptions = (t: (key: string) => string) => [
   {
     value: 'ADMIN',
@@ -84,7 +125,7 @@ const getRoleOptions = (t: (key: string) => string) => [
 // Displays a single team member row with role badge and remove action
 
 interface MemberCardProps {
-  item: any;
+  item: TeamMember;
   onRemove: (userId: string) => void;
 }
 
@@ -94,7 +135,7 @@ const MemberCard: React.FC<MemberCardProps> = ({ item, onRemove }) => {
 
   const role = ROLE_CONFIG[item.role] ?? ROLE_CONFIG.MEMBER;
   const displayName = item.user?.name || item.user?.email || 'Unknown';
-  const initial = displayName[0]?.toUpperCase();
+  const initial = displayName.charAt(0).toUpperCase();
 
   // Extract nested ternary — fix for sonarqube(typescript:S3358)
   const renderRemoveAction = () => {
@@ -158,18 +199,19 @@ const MemberCard: React.FC<MemberCardProps> = ({ item, onRemove }) => {
 // Displays a project card with hover accent bar and action buttons
 
 interface ProjectCardProps {
-  project: any;
+  project: Project;
   onDelete: (projectId: string) => void;
+  modal: ReturnType<typeof Modal.useModal>[0];
 }
 
-const ProjectCard: React.FC<ProjectCardProps> = ({ project, onDelete }) => {
+const ProjectCard: React.FC<ProjectCardProps> = ({ project, onDelete, modal }) => {
   const { t: tCommon } = useTranslation('common');
   const { t: tPage } = useTranslation('page.teamDetail');
 
-  // Extracted from inline onClick to avoid nested ternary warnings
+  // Uses modal instance from useModal — respects React context (i18n, theme)
   const handleDelete = (e: React.MouseEvent) => {
     e.stopPropagation();
-    Modal.confirm({
+    modal.confirm({
       title: tPage('project.deleteTitle'),
       content: tPage('project.deleteConfirm', { name: project.projectName }),
       okText: tCommon('delete'),
@@ -182,7 +224,14 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, onDelete }) => {
   // Extract avatar rendering to avoid nested ternary — fix for sonarqube(typescript:S3358)
   const renderProjectAvatar = () => {
     if (project.projectPictureUrl) {
-      return <Avatar shape="square" size={48} src={project.projectPictureUrl} className="rounded-lg" />;
+      return (
+        <Avatar
+          shape="square"
+          size={48}
+          src={project.projectPictureUrl}
+          className="rounded-lg"
+        />
+      );
     }
     return (
       <div className="w-12 h-12 rounded-lg bg-linear-to-br from-indigo-100 to-purple-100 flex items-center justify-center">
@@ -195,7 +244,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, onDelete }) => {
     <Card
       hoverable
       className="project-card overflow-hidden border border-gray-100 hover:border-indigo-300 hover:shadow-lg transition-all duration-300 group relative"
-      // Fix: bodyStyle deprecated → use styles.body in antd v6
+      // Fix: bodyStyle deprecated → use styles.body in antd v5+
       styles={{ body: { padding: '16px' } }}
     >
       {/* Top accent bar — visible on hover */}
@@ -213,10 +262,21 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, onDelete }) => {
             {/* Action buttons — visible on hover */}
             <div className="flex gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
               <Tooltip title={tCommon('settings')}>
-                <Button type="text" size="small" icon={<SettingOutlined />} className="text-gray-400 hover:text-indigo-500" />
+                <Button
+                  type="text"
+                  size="small"
+                  icon={<SettingOutlined />}
+                  className="text-gray-400 hover:text-indigo-500"
+                />
               </Tooltip>
               <Tooltip title={tCommon('delete')}>
-                <Button type="text" size="small" danger icon={<DeleteOutlined />} onClick={handleDelete} />
+                <Button
+                  type="text"
+                  size="small"
+                  danger
+                  icon={<DeleteOutlined />}
+                  onClick={handleDelete}
+                />
               </Tooltip>
             </div>
           </div>
@@ -242,6 +302,9 @@ const TeamDetailPage: React.FC = () => {
   const { t: tCommon } = useTranslation('common');
   const { t: tPage } = useTranslation('page.teamDetail');
 
+  // useModal — replaces static Modal.confirm to respect React context
+  const [modal, contextHolder] = Modal.useModal();
+
   const [activeTab, setActiveTab] = useState('members');
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
   const [isCreateProjectModalOpen, setIsCreateProjectModalOpen] = useState(false);
@@ -257,11 +320,11 @@ const TeamDetailPage: React.FC = () => {
   const { mutate: createProject, isPending: isCreatingProject } = useCreateProject(teamId!);
   const { mutate: deleteProject } = useDeleteProject(teamId!);
 
-  const [inviteForm] = Form.useForm();
-  const [projectForm] = Form.useForm();
+  const [inviteForm] = Form.useForm<InviteFormValues>();
+  const [projectForm] = Form.useForm<CreateProjectFormValues>();
 
-  const MEMBER_SKELETON_KEYS = ['ms-1', 'ms-2', 'ms-3', 'ms-4'] as const;
-  const PROJECT_SKELETON_KEYS = ['ps-1', 'ps-2', 'ps-3', 'ps-4', 'ps-5', 'ps-6'] as const;
+  // ── Role options — memoized to avoid re-creating JSX on every render ──────
+  const roleOptions = useMemo(() => getRoleOptions(tPage), [tPage]);
 
   // ── Modal Handlers ────────────────────────────────────────────────────────
 
@@ -276,13 +339,13 @@ const TeamDetailPage: React.FC = () => {
   };
 
   // Submit invite form — calls addMember mutation
-  const handleInvite = (values: { email: string; role: TeamRole }) => {
+  const handleInvite = (values: InviteFormValues) => {
     addMember(values, { onSuccess: handleCloseInviteModal });
   };
 
   // Submit create project form — extracts File object from Upload fileList
-  const handleCreateProject = (values: { name: string; description: string; file: any }) => {
-    const file = values.file?.[0]?.originFileObj ?? null;
+  const handleCreateProject = (values: CreateProjectFormValues) => {
+    const file = values.file?.[0]?.originFileObj ?? undefined;
     createProject(
       { name: values.name, description: values.description, file },
       { onSuccess: handleCloseProjectModal }
@@ -299,7 +362,7 @@ const TeamDetailPage: React.FC = () => {
     );
   }
 
-  // ── Not Found State ───────────────────────────────────────────────────────
+  // ── Not Found State ─────────────────────────────────────────────────────── 
   if (!team) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
@@ -314,32 +377,44 @@ const TeamDetailPage: React.FC = () => {
     );
   }
 
-  // ── Skeleton Loaders ──────────────────────────────────────────────────────
+  // ── Content Renderers ─────────────────────────────────────────────────────
   // Extracted to avoid inline nested ternary in tab children
 
   const renderMembersContent = () => {
     if (isMembersLoading) {
-    return (
-      <div className="space-y-3">
-        {MEMBER_SKELETON_KEYS.map((key) => (
-          <Skeleton key={key} avatar active paragraph={{ rows: 1 }} />
-        ))}
-      </div>
-    );
-  }
+      return (
+        <div className="space-y-3">
+          {MEMBER_SKELETON_KEYS.map((key) => (
+            <Skeleton key={key} avatar active paragraph={{ rows: 1 }} />
+          ))}
+        </div>
+      );
+    }
     if (members && members.length > 0) {
       return (
         <div className="space-y-2">
-          {members.map((item: any) => (
+          {(members as TeamMember[]).map((item) => (
             // Use unique user id as key — fix for sonarqube(typescript:S6479)
-            <MemberCard key={item.user?.id} item={item} onRemove={(userId) => removeMember(userId)} />
+            <MemberCard
+              key={item.user?.id}
+              item={item}
+              // Simplified: removed unnecessary arrow wrapper
+              onRemove={removeMember}
+            />
           ))}
         </div>
       );
     }
     return (
-      <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={tPage('member.empty')}>
-        <Button type="primary" icon={<UserAddOutlined />} onClick={() => setIsInviteModalOpen(true)}>
+      <Empty
+        image={Empty.PRESENTED_IMAGE_SIMPLE}
+        description={tPage('member.empty')}
+      >
+        <Button
+          type="primary"
+          icon={<UserAddOutlined />}
+          onClick={() => setIsInviteModalOpen(true)}
+        >
           {tPage('member.inviteFirst')}
         </Button>
       </Empty>
@@ -348,104 +423,141 @@ const TeamDetailPage: React.FC = () => {
 
   const renderProjectsContent = () => {
     if (isProjectsLoading) {
-    return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {PROJECT_SKELETON_KEYS.map((key) => (
-          <Card key={key}>
-            <Skeleton avatar active paragraph={{ rows: 2 }} />
-          </Card>
-        ))}
-      </div>
-    );
-  }
+      return (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {PROJECT_SKELETON_KEYS.map((key) => (
+            <Card key={key}>
+              <Skeleton avatar active paragraph={{ rows: 2 }} />
+            </Card>
+          ))}
+        </div>
+      );
+    }
     if (projects && projects.length > 0) {
       return (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {projects.map((project: any) => (
+          {(projects as Project[]).map((project) => (
             // Use unique project id as key — fix for sonarqube(typescript:S6479)
-            <ProjectCard key={project.projectId} project={project} onDelete={(id) => deleteProject(id)} />
+            <ProjectCard
+              key={project.projectId}
+              project={project}
+              modal={modal}
+              // Simplified: removed unnecessary arrow wrapper
+              onDelete={deleteProject}
+            />
           ))}
         </div>
       );
     }
     return (
-      <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={tPage('project.empty')}>
-        <Button type="primary" icon={<PlusOutlined />} onClick={() => setIsCreateProjectModalOpen(true)}>
+      <Empty
+        image={Empty.PRESENTED_IMAGE_SIMPLE}
+        description={tPage('project.empty')}
+      >
+        <Button
+          type="primary"
+          icon={<PlusOutlined />}
+          onClick={() => setIsCreateProjectModalOpen(true)}
+        >
           {tPage('project.createFirst')}
         </Button>
       </Empty>
     );
   };
 
-  // ── Tab Definitions ───────────────────────────────────────────────────────
-  const tabItems = [
-    {
-      key: 'members',
-      label: (
-        <span className="flex items-center gap-2 px-2">
-          <TeamOutlined />
-          <span>{tPage('tabs.members')}</span>
-          {members && <Badge count={members.length} size="small" color="geekblue" overflowCount={99} />}
-        </span>
-      ),
-      children: (
-        <div className="px-6 py-4">
-          <div className="flex justify-between items-center mb-5">
-            <div>
-              <Title level={4} style={{ margin: 0 }}>{tPage('member.title')}</Title>
-              <Text type="secondary" className="text-sm">
-                {tPage('member.count', { count: members?.length ?? 0 })}
-              </Text>
+  // ── Tab Definitions — memoized to avoid re-creating JSX on every render ───
+  const tabItems = useMemo(
+    () => [
+      {
+        key: 'members',
+        label: (
+          <span className="flex items-center gap-2 px-2">
+            <TeamOutlined />
+            <span>{tPage('tabs.members')}</span>
+            {members && (
+              <Badge
+                count={members.length}
+                size="small"
+                color="geekblue"
+                overflowCount={99}
+              />
+            )}
+          </span>
+        ),
+        children: (
+          <div className="px-6 py-4">
+            <div className="flex justify-between items-center mb-5">
+              <div>
+                <Title level={4} style={{ margin: 0 }}>
+                  {tPage('member.title')}
+                </Title>
+                <Text type="secondary" className="text-sm">
+                  {tPage('member.count', { count: members?.length ?? 0 })}
+                </Text>
+              </div>
+              <Button
+                type="primary"
+                icon={<UserAddOutlined />}
+                onClick={() => setIsInviteModalOpen(true)}
+                className="bg-indigo-500 hover:bg-indigo-600 border-none shadow-sm"
+              >
+                {tPage('member.invite')}
+              </Button>
             </div>
-            <Button
-              type="primary"
-              icon={<UserAddOutlined />}
-              onClick={() => setIsInviteModalOpen(true)}
-              className="bg-indigo-500 hover:bg-indigo-600 border-none shadow-sm"
-            >
-              {tPage('member.invite')}
-            </Button>
+            {renderMembersContent()}
           </div>
-          {renderMembersContent()}
-        </div>
-      ),
-    },
-    {
-      key: 'projects',
-      label: (
-        <span className="flex items-center gap-2 px-2">
-          <ProjectOutlined />
-          <span>{tPage('tabs.projects')}</span>
-          {projects && <Badge count={projects.length} size="small" color="geekblue" overflowCount={99} />}
-        </span>
-      ),
-      children: (
-        <div className="px-6 py-4">
-          <div className="flex justify-between items-center mb-5">
-            <div>
-              <Title level={4} style={{ margin: 0 }}>{tPage('project.title')}</Title>
-              <Text type="secondary" className="text-sm">
-                {tPage('project.count', { count: projects?.length ?? 0 })}
-              </Text>
+        ),
+      },
+      {
+        key: 'projects',
+        label: (
+          <span className="flex items-center gap-2 px-2">
+            <ProjectOutlined />
+            <span>{tPage('tabs.projects')}</span>
+            {projects && (
+              <Badge
+                count={projects.length}
+                size="small"
+                color="geekblue"
+                overflowCount={99}
+              />
+            )}
+          </span>
+        ),
+        children: (
+          <div className="px-6 py-4">
+            <div className="flex justify-between items-center mb-5">
+              <div>
+                <Title level={4} style={{ margin: 0 }}>
+                  {tPage('project.title')}
+                </Title>
+                <Text type="secondary" className="text-sm">
+                  {tPage('project.count', { count: projects?.length ?? 0 })}
+                </Text>
+              </div>
+              <Button
+                type="primary"
+                icon={<PlusOutlined />}
+                onClick={() => setIsCreateProjectModalOpen(true)}
+                className="bg-indigo-500 hover:bg-indigo-600 border-none shadow-sm"
+              >
+                {tPage('project.create')}
+              </Button>
             </div>
-            <Button
-              type="primary"
-              icon={<PlusOutlined />}
-              onClick={() => setIsCreateProjectModalOpen(true)}
-              className="bg-indigo-500 hover:bg-indigo-600 border-none shadow-sm"
-            >
-              {tPage('project.create')}
-            </Button>
+            {renderProjectsContent()}
           </div>
-          {renderProjectsContent()}
-        </div>
-      ),
-    },
-  ];
+        ),
+      },
+    ],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [activeTab, members, projects, isMembersLoading, isProjectsLoading, tPage]
+  );
 
   // ── Render ────────────────────────────────────────────────────────────────
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {/* Modal context holder — required by useModal to inject into React tree */}
+      {contextHolder}
 
       {/* ── Team Header ── */}
       <div className="relative bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-6 overflow-hidden">
@@ -458,10 +570,12 @@ const TeamDetailPage: React.FC = () => {
           <div className="flex gap-4 items-center">
             {/* Team initial avatar */}
             <div className="w-16 h-16 rounded-2xl bg-linear-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-2xl font-bold text-white shadow-lg shadow-indigo-200 shrink-0">
-              {team.teamName?.[0]?.toUpperCase()}
+              {team.teamName?.charAt(0).toUpperCase()}
             </div>
             <div>
-              <Title level={2} style={{ margin: 0, lineHeight: 1.2 }}>{team.teamName}</Title>
+              <Title level={2} style={{ margin: 0, lineHeight: 1.2 }}>
+                {team.teamName}
+              </Title>
               <Text type="secondary" className="text-sm mt-1 block">
                 {team.teamDescription || tPage('noDescription')}
               </Text>
@@ -476,7 +590,10 @@ const TeamDetailPage: React.FC = () => {
               </div>
             </div>
           </div>
-          <Button icon={<SettingOutlined />} className="shrink-0 hover:border-indigo-400 hover:text-indigo-500">
+          <Button
+            icon={<SettingOutlined />}
+            className="shrink-0 hover:border-indigo-400 hover:text-indigo-500"
+          >
             {tCommon('settings')}
           </Button>
         </div>
@@ -492,9 +609,10 @@ const TeamDetailPage: React.FC = () => {
               key={tab.key}
               onClick={() => setActiveTab(tab.key)}
               className={`w-full flex items-center text-left px-3 py-2.5 mx-2 rounded-lg text-sm transition-all duration-200 mb-1
-                ${activeTab === tab.key
-                  ? 'bg-indigo-50 text-indigo-600 font-semibold'
-                  : 'text-gray-600 hover:bg-indigo-50 hover:text-indigo-500'
+                ${
+                  activeTab === tab.key
+                    ? 'bg-indigo-50 text-indigo-600 font-semibold'
+                    : 'text-gray-600 hover:bg-indigo-50 hover:text-indigo-500'
                 }`}
               style={{ width: 'calc(100% - 16px)' }}
             >
@@ -509,8 +627,7 @@ const TeamDetailPage: React.FC = () => {
         </div>
       </div>
 
-      {/* ── Invite Member Modal ──
-          Fix: destroyOnClose deprecated → removed; use key prop to reset state instead */}
+      {/* ── Invite Member Modal ── */}
       <Modal
         title={
           <div className="flex items-center gap-2 text-base">
@@ -521,15 +638,19 @@ const TeamDetailPage: React.FC = () => {
         open={isInviteModalOpen}
         onCancel={handleCloseInviteModal}
         footer={null}
-        // Use key to force remount on open — replaces deprecated destroyOnClose
-        key={isInviteModalOpen ? 'invite-open' : 'invite-closed'}
       >
         <Divider className="mt-3 mb-5" />
         <Form form={inviteForm} onFinish={handleInvite} layout="vertical">
           <Form.Item
             name="email"
             label={tCommon('email')}
-            rules={[{ required: true, type: 'email', message: tPage('validation.email') }]}
+            rules={[
+              {
+                required: true,
+                type: 'email',
+                message: tPage('validation.email'),
+              },
+            ]}
           >
             <Input
               prefix={<UserOutlined className="text-gray-300" />}
@@ -540,7 +661,7 @@ const TeamDetailPage: React.FC = () => {
 
           <Form.Item name="role" label={tPage('member.role')} initialValue="MEMBER">
             {/* Fix: Select.Option deprecated → use options prop instead */}
-            <Select size="large" options={getRoleOptions(tPage)} />
+            <Select size="large" options={roleOptions} />
           </Form.Item>
 
           <div className="flex justify-end gap-2 pt-2">
@@ -557,8 +678,7 @@ const TeamDetailPage: React.FC = () => {
         </Form>
       </Modal>
 
-      {/* ── Create Project Modal ──
-          Fix: destroyOnClose deprecated → removed; form.resetFields() handles cleanup */}
+      {/* ── Create Project Modal ── */}
       <Modal
         title={
           <div className="flex items-center gap-2 text-base">
@@ -569,15 +689,18 @@ const TeamDetailPage: React.FC = () => {
         open={isCreateProjectModalOpen}
         onCancel={handleCloseProjectModal}
         footer={null}
-        // Use key to force remount on open — replaces deprecated destroyOnClose
-        key={isCreateProjectModalOpen ? 'project-open' : 'project-closed'}
       >
         <Divider className="mt-3 mb-5" />
         <Form form={projectForm} onFinish={handleCreateProject} layout="vertical">
           <Form.Item
             name="name"
             label={tPage('project.name')}
-            rules={[{ required: true, message: tPage('validation.projectName') }]}
+            rules={[
+              {
+                required: true,
+                message: tPage('validation.projectName'),
+              },
+            ]}
           >
             <Input
               placeholder={tPage('project.namePlaceholder')}
@@ -601,7 +724,12 @@ const TeamDetailPage: React.FC = () => {
             valuePropName="fileList"
             getValueFromEvent={(e) => (Array.isArray(e) ? e : e?.fileList)}
           >
-            <Upload maxCount={1} beforeUpload={() => false} listType="picture" accept="image/*">
+            <Upload
+              maxCount={1}
+              beforeUpload={() => false}
+              listType="picture"
+              accept="image/*"
+            >
               <Button icon={<UploadOutlined />} className="w-full">
                 {tCommon('selectFile')}
               </Button>
