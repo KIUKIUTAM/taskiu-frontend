@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { Button, Card, Empty, Form, Input, Modal, Tag, Skeleton, Avatar, Tooltip } from 'antd';
+import message from 'antd/es/message';
 import {
   PlusOutlined,
   ReloadOutlined,
@@ -91,7 +92,8 @@ const TeamCard: React.FC<{ member: TeamMember }> = ({ member }) => {
 
   const handleClick = () => {
     if (teamPublicId) {
-      navigate(`/team/${teamPublicId}`);
+      message.info("Service is under maintenance. Please try again later.");
+      //navigate(`/team/${teamPublicId}`);
     }
   };
 
