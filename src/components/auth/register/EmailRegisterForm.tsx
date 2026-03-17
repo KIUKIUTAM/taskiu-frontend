@@ -5,9 +5,9 @@ import { z } from 'zod';
 import { useTranslation, Trans } from 'react-i18next';
 import type { TFunction } from 'i18next';
 import { Turnstile } from '@marsidev/react-turnstile';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useEmailRegister } from '@/hooks/auth/useEmailRegister';
-import {TURNSTILE_SITE_KEY} from '@/config/TurnstileProperty'
+import { TURNSTILE_SITE_KEY } from '@/config/TurnstileProperty'
 
 import { Form, Input, Button, Checkbox, Modal, Result, message, theme } from 'antd';
 
@@ -36,7 +36,7 @@ export const EmailRegisterForm: React.FC = () => {
   const { t } = useTranslation(['auth', 'common']);
   const navigate = useNavigate();
   const [token, setToken] = useState<string | null>(null);
-  
+
 
   const { token: themeToken } = theme.useToken();
   const { login: emailRegister, isLoading: isEmailLoading, isSuccess } = useEmailRegister();
@@ -170,15 +170,15 @@ export const EmailRegisterForm: React.FC = () => {
                 ns="auth"
                 components={{
                   1: (
-                    <a
-                      href="/terms"
+                    <Link
+                      to="/terms"
                       target="_blank"
                       rel="noopener noreferrer"
                       style={{ color: themeToken.colorPrimary }}
                       className="hover:underline"
                     >
                       Terms
-                    </a>
+                    </Link>
                   ),
                 }}
               />

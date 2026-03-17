@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Mail, ArrowRight, CheckCircle2, Send } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { Button, Card, ConfigProvider, Typography, Input, theme, GetProps } from 'antd';
 
 // Assume hook paths are unchanged
@@ -119,9 +119,9 @@ const EmailVerification = () => {
               {showSuccessUI
                 ? t('youCanNowCloseThisPageOrContinue', { ns: 'auth' })
                 : t('weHaveSentA6DigitVerificationCode', {
-                    email: user?.email || 'your email',
-                    ns: 'auth',
-                  })}
+                  email: user?.email || 'your email',
+                  ns: 'auth',
+                })}
             </Text>
           </div>
 
@@ -132,8 +132,11 @@ const EmailVerification = () => {
                 type="primary"
                 size="large"
                 block
+                style={{
+                  backgroundColor: '#111827',
+                  borderColor: '#111827',
+                }}
                 onClick={() => navigate('/dashboard', { replace: true })}
-                className="bg-gray-900 hover:bg-gray-800 border-gray-900"
               >
                 {t('goToDashboard', { ns: 'auth' })}
               </Button>
@@ -148,6 +151,7 @@ const EmailVerification = () => {
                   onChange={handleOtpChange}
                   size="large"
                   style={{ gap: '8px' }}
+                  className="otp-bold"
                 />
               </div>
 
@@ -177,10 +181,9 @@ const EmailVerification = () => {
                   disabled={timer > 0 || isSending}
                   loading={isSending}
                   className={`
-                    ${
-                      timer > 0
-                        ? 'bg-gray-200 border-gray-200 text-gray-400'
-                        : 'bg-white text-blue-600 border-blue-200 hover:text-blue-700 hover:border-blue-300'
+                    ${timer > 0
+                      ? 'bg-gray-200 border-gray-200 text-gray-400'
+                      : 'bg-white text-blue-600 border-blue-200 hover:text-blue-700 hover:border-blue-300'
                     }
                   `}
                   style={{ height: 'auto', padding: '6px 16px' }}
