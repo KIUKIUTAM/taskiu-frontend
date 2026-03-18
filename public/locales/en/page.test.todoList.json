@@ -1,0 +1,5 @@
+{
+  "loading": "Loading...",
+  "errorPrefix": "Error occurred: {{message}}"
+}
+

@@ -1,0 +1,13 @@
+{
+  "titleVerify": "驗證您的電子郵件",
+  "titleSuccess": "驗證成功！",
+  "subtitleSuccess": "您現在可以關閉此頁面或繼續使用應用程式。",
+  "subtitleSentCode": "我們已向您的電子郵件發送了一個 6 位數的驗證碼：{{email}}",
+  "goToDashboard": "前往儀表板",
+  "didNotReceive": "未收到驗證碼？",
+  "secondsBeforeResend": "在 {{count}} 秒後可重新發送",
+  "resend": "重新發送",
+  "verify": "驗證",
+  "verifying": "正在驗證..."
+}
+
