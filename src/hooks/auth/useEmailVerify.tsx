@@ -9,17 +9,21 @@ import { fetchUserProfile } from './useAuth';
 export const useEmailVerify = () => {
   const queryClient = useQueryClient();
   const { t } = useTranslation('toast');
+  const navigate = useNavigate();
 
   const mutationVerify = useMutation({
     mutationFn: async (verifyCode: string) => {
       return await authApi.verifyEmail(verifyCode);
     },
     onSuccess: async (data: any) => {
-      setAccessToken(data.accessToken);
-      await queryClient.ensureQueryData({
-        queryKey: ['auth-user'],
-        queryFn: fetchUserProfile,
-      });
+      console.log('[onSuccess] raw data:', data);
+      console.log('[onSuccess] accessToken:', data.data.accessToken);
+
+      setAccessToken(data.data.accessToken);
+
+      await queryClient.invalidateQueries({ queryKey: ['auth-user'] });
+
+      navigate('/dashboard', { replace: true });
     },
     onError: (error) => {
       console.error('Verify Failed:', error);
@@ -30,7 +34,6 @@ export const useEmailVerify = () => {
   return {
     verifyEmail: mutationVerify.mutate,
     isVerifying: mutationVerify.isPending,
-    isVerifySuccess: mutationVerify.isSuccess,
     isVerifyError: mutationVerify.isError,
   };
 };

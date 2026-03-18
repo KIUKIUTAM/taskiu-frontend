@@ -7,5 +7,17 @@
     "verifyFailedPleaseTryAgain": "Verification failed, please try again.",
     "sendVerifyEmailFailedPleaseTryAgain": "Send verify email failed, please try again.",
     "verificationEmailSentPleaseCheckYourInbox": "Verification email sent, please check your inbox.",
-    "loginSuccessfulWelcomeBack": "Login successful, welcome back!"
+    "loginSuccessfulWelcomeBack": "Login successful, welcome back!",
+    "team": {
+        "createSuccess": "Team created",
+        "createFailed": "Failed to create team",
+        "memberAdded": "Member added successfully",
+        "memberAddFailed": "Failed to add member",
+        "memberRemoved": "Member removed successfully",
+        "memberRemoveFailed": "Failed to remove member",
+        "projectCreated": "Project created successfully",
+        "projectCreateFailed": "Failed to create project",
+        "projectDeleted": "Project deleted successfully",
+        "projectDeleteFailed": "Failed to delete project"
+    }
 }

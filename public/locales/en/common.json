@@ -26,10 +26,17 @@
   "profile": "Profile",
   "settings": "Settings",
   "team": "Team",
+  "create": "Create",
+  "cancel": "Cancel",
+  "confirm": "Confirm",
+  "delete": "Delete",
+  "email": "Email",
+  "selectFile": "Select File",
   "careers": "Careers",
   "blog": "Blog",
   "startUsing": "Start",
   "loading": "Loading",
   "back": "Back",
   "loginSuccess": "Login successful, redirecting..."
+  
 }

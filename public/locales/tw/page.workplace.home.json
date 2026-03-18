@@ -1,0 +1,13 @@
+{
+  "welcomeBack": "歡迎回來！",
+  "subtitle": "今天開始你的學習旅程。",
+  "cards": {
+    "coursesTitle": "課程",
+    "coursesDesc": "查看你已加入的所有課程",
+    "progressTitle": "進度",
+    "progressDesc": "追蹤你的學習進度",
+    "achievementsTitle": "成就",
+    "achievementsDesc": "查看你的徽章與證書"
+  }
+}
+

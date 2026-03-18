@@ -1,11 +1,12 @@
 {
   "compilerOptions": {
+    "baseUrl": ".",
     "moduleResolution": "bundler",
     "paths": {
       "@/*": ["./src/*"]
     },
     "types": ["vite/client"],
-
+    "forceConsistentCasingInFileNames": true,
     "jsx": "react-jsx",
     "strict": true,
     "noImplicitAny": true,

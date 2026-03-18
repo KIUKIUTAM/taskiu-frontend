@@ -1,0 +1,48 @@
+{
+  "notFound": "找不到團隊",
+  "noDescription": "未提供描述",
+  "role": {
+    "owner": "擁有者",
+    "admin": "管理員",
+    "member": "成員"
+  },
+  "tabs": {
+    "members": "成員",
+    "projects": "專案"
+  },
+  "member": {
+    "title": "團隊成員",
+    "count": "{{count}} 位成員",
+    "invite": "邀請成員",
+    "inviteTitle": "邀請成員",
+    "inviteFirst": "先邀請第一位成員",
+    "role": "角色",
+    "sendInvite": "送出邀請",
+    "empty": "目前沒有任何成員",
+    "remove": "移除",
+    "removeTitle": "移除成員",
+    "removeConfirm": "確定要移除這位成員嗎？"
+  },
+  "project": {
+    "title": "專案",
+    "count": "{{count}} 個專案",
+    "create": "新增專案",
+    "createTitle": "建立專案",
+    "createFirst": "先建立第一個專案",
+    "createBtn": "建立",
+    "name": "專案名稱",
+    "namePlaceholder": "輸入專案名稱",
+    "description": "描述",
+    "descriptionPlaceholder": "輸入專案描述（選填）",
+    "picture": "專案圖片",
+    "noDescription": "未提供描述",
+    "empty": "目前沒有任何專案",
+    "deleteTitle": "刪除專案",
+    "deleteConfirm": "確定要刪除「{{name}}」嗎？此操作無法復原。"
+  },
+  "validation": {
+    "email": "請輸入有效的電子郵件",
+    "projectName": "請輸入專案名稱"
+  }
+}
+

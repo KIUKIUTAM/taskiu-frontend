@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
 
 import { Form, Input, Button, Checkbox, theme } from 'antd';
+import { Link } from 'react-router-dom';
 
 const LoginSchema = (t: TFunction) => {
   return z.object({
@@ -123,13 +124,12 @@ export const EmailLoginForm: React.FC<Props> = ({ onEmailLogin, isEmailLoading }
       {/* Register link */}
       <div className="text-center text-sm text-gray-600">
         {t('dontHaveAccount', { ns: 'common' })}{' '}
-        <a
-          href="/register"
+
+        <Link
           className="font-medium hover:underline"
           style={{ color: token.colorPrimary }}
-        >
-          {t('signUp', { ns: 'common' })}
-        </a>
+          to="/register">{t('signUp', { ns: 'common' })}</Link>
+
       </div>
     </Form>
   );

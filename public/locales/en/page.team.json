@@ -1,0 +1,24 @@
+{
+  "pageSubtitle": "Manage your teams and members",
+  "refresh": "Refresh",
+  "createTeam": "Create Team",
+  "noTeams": "No teams yet",
+  "unknownTeam": "Unknown team",
+  "noDescription": "No description",
+  "joined": "Joined",
+  "teams": "teams",
+  "role": {
+    "owner": "Owner",
+    "admin": "Admin",
+    "member": "Member"
+  },
+  "form": {
+    "teamName": "Team name",
+    "teamNameRequired": "Team name is required",
+    "teamNameMin": "Team name must be at least 2 characters",
+    "teamNamePlaceholder": "e.g. Engineering Team",
+    "teamDescription": "Description",
+    "teamDescriptionPlaceholder": "Optional description"
+  }
+}
+

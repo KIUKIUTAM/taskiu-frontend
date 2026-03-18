@@ -11,6 +11,7 @@ export default i18n
     fallbackLng: 'en',
     debug: false,
     defaultNS: 'common',
+    fallbackNS: 'common',
     interpolation: {
       escapeValue: false,
     },

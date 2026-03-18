@@ -12,6 +12,8 @@ import DashLayout from '@/page/workplace/Layout/index';
 const EmailVerification = lazy(() => import('@/page/workplace/EmailVerification/index'));
 const DashboardHome = lazy(() => import('@/page/workplace/Home/index'));
 const MissionsPage = lazy(() => import('@/page/workplace/Missions/index'));
+const TeamPage = lazy(() => import('@/page/workplace/Team/index'));
+const TeamDetailPage = lazy(() => import('@/page/workplace/TeamDetail/index'));
 const TermsPage = lazy(() => import('@/page/public/terms/index'));
 import NotFound from '@/page/public/NotFound/index';
 
@@ -100,7 +102,19 @@ const routes = [
       },
       {
         path: 'team',
-        element: <div>Team Page - Under Construction</div>,
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <TeamPage />
+          </Suspense>
+        ),
+      },
+      {
+        path: 'team/:teamId',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <TeamDetailPage />
+          </Suspense>
+        ),
       },
       {
         path: 'verify-email',

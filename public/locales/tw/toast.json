@@ -7,5 +7,17 @@
     "verifyFailedPleaseTryAgain": "驗證失敗，請重試。",
     "sendVerifyEmailFailedPleaseTryAgain": "發送驗證郵件失敗，請重試。",
     "verificationEmailSentPleaseCheckYourInbox": "驗證郵件已發送，請檢查您的收件箱。",
-    "loginSuccessfulWelcomeBack": "登入成功，歡迎回來！"
+    "loginSuccessfulWelcomeBack": "登入成功，歡迎回來！",
+    "team": {
+        "createSuccess": "團隊已建立",
+        "createFailed": "建立團隊失敗",
+        "memberAdded": "已成功新增成員",
+        "memberAddFailed": "新增成員失敗",
+        "memberRemoved": "已成功移除成員",
+        "memberRemoveFailed": "移除成員失敗",
+        "projectCreated": "已成功建立專案",
+        "projectCreateFailed": "建立專案失敗",
+        "projectDeleted": "已成功刪除專案",
+        "projectDeleteFailed": "刪除專案失敗"
+    }
 }

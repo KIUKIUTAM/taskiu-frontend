@@ -1,0 +1,48 @@
+{
+  "notFound": "Team not found",
+  "noDescription": "No description provided",
+  "role": {
+    "owner": "Owner",
+    "admin": "Admin",
+    "member": "Member"
+  },
+  "tabs": {
+    "members": "Members",
+    "projects": "Projects"
+  },
+  "member": {
+    "title": "Team Members",
+    "count": "{{count}} members",
+    "invite": "Invite Member",
+    "inviteTitle": "Invite Member",
+    "inviteFirst": "Invite First Member",
+    "role": "Role",
+    "sendInvite": "Send Invite",
+    "empty": "No members yet",
+    "remove": "Remove",
+    "removeTitle": "Remove Member",
+    "removeConfirm": "Are you sure you want to remove this member?"
+  },
+  "project": {
+    "title": "Projects",
+    "count": "{{count}} projects",
+    "create": "New Project",
+    "createTitle": "Create Project",
+    "createFirst": "Create First Project",
+    "createBtn": "Create",
+    "name": "Project Name",
+    "namePlaceholder": "Enter project name",
+    "description": "Description",
+    "descriptionPlaceholder": "Enter project description (optional)",
+    "picture": "Project Picture",
+    "noDescription": "No description provided",
+    "empty": "No projects yet",
+    "deleteTitle": "Delete Project",
+    "deleteConfirm": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone."
+  },
+  "validation": {
+    "email": "Please enter a valid email address",
+    "projectName": "Please enter a project name"
+  }
+}
+

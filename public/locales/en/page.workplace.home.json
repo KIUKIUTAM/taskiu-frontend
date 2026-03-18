@@ -1,0 +1,13 @@
+{
+  "welcomeBack": "Welcome Back!",
+  "subtitle": "Start your learning journey today.",
+  "cards": {
+    "coursesTitle": "Courses",
+    "coursesDesc": "Access all your enrolled courses",
+    "progressTitle": "Progress",
+    "progressDesc": "Track your learning progress",
+    "achievementsTitle": "Achievements",
+    "achievementsDesc": "View your badges and certificates"
+  }
+}
+

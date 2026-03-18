@@ -1,0 +1,13 @@
+{
+  "titleVerify": "Verify Your Email",
+  "titleSuccess": "Verification successful!",
+  "subtitleSuccess": "You can now close this page or continue to the app.",
+  "subtitleSentCode": "We have sent a 6-digit verification code to your email: {{email}}",
+  "goToDashboard": "Go to Dashboard",
+  "didNotReceive": "Did not receive the verification code?",
+  "secondsBeforeResend": "{{count}} seconds before you can resend",
+  "resend": "Resend",
+  "verify": "Verify",
+  "verifying": "Verifying..."
+}
+

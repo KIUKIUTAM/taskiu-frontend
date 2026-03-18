@@ -1,9 +1,12 @@
+import { useTranslation } from 'react-i18next';
+
 function Contact() {
+  const { t } = useTranslation('page.public.contact');
   return (
     <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-pink-50 to-purple-50">
       <div className="text-center px-4">
-        <h2 className="text-3xl md:text-5xl font-bold text-gray-800 mb-4">Contact Section</h2>
-        <p className="text-gray-600 max-w-2xl mx-auto">Get in touch with us</p>
+        <h2 className="text-3xl md:text-5xl font-bold text-gray-800 mb-4">{t('title')}</h2>
+        <p className="text-gray-600 max-w-2xl mx-auto">{t('subtitle')}</p>
       </div>
     </div>
   );

@@ -1,8 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
+import { useTranslation } from 'react-i18next';
 
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 function TodoList() {
+  const { t } = useTranslation('page.test.todoList');
   const { data, isPending, isError, error } = useQuery({
     queryKey: ['todos'], // 1. Unique Key (dependency array)
     queryFn: async () => {
@@ -13,8 +15,8 @@ function TodoList() {
     // staleTime: 10000, // Optional: Set expiration time individually
   });
 
-  if (isPending) return <span>Loading...</span>;
-  if (isError) return <span>Error occurred: {error.message}</span>;
+  if (isPending) return <span>{t('loading')}</span>;
+  if (isError) return <span>{t('errorPrefix', { message: error.message })}</span>;
 
   return (
     <ul>
