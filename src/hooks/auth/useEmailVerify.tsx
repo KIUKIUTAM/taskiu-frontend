@@ -15,8 +15,9 @@ export const useEmailVerify = () => {
       return await authApi.verifyEmail(verifyCode);
     },
     onSuccess: async (data: any) => {
-      setAccessToken(data.accessToken);
-      await queryClient.ensureQueryData({
+      setAccessToken(data.data.accessToken);
+      await queryClient.invalidateQueries({ queryKey: ['auth-user'] });
+      await queryClient.fetchQuery({
         queryKey: ['auth-user'],
         queryFn: fetchUserProfile,
       });

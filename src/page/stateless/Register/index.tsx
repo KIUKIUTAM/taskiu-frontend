@@ -5,7 +5,8 @@ import { ArrowLeft } from 'lucide-react';
 import { EmailRegisterForm } from '@/components/auth/register/EmailRegisterForm';
 
 export const RegisterPage: React.FC = () => {
-  const { t } = useTranslation(['auth', 'common']);
+  const { t: tPage } = useTranslation('page.stateless.register');
+  const { t: tCommon } = useTranslation('common');
   const navigate = useNavigate();
 
   const handleBack = () => {
@@ -19,16 +20,16 @@ export const RegisterPage: React.FC = () => {
         className="sticky top-24 left-6 self-start flex items-center gap-2 text-gray-500 hover:text-gray-900 transition-colors font-medium z-40 ml-6 mt-6"
       >
         <ArrowLeft className="w-5 h-5" />
-        <span className="hidden lg:flex">{t('back', { ns: 'common' })}</span>
+        <span className="hidden lg:flex">{tCommon('back')}</span>
       </button>
 
       {/* Page Title Area */}
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-          {t('createAccount', { ns: 'auth' })}
+          {tPage('title')}
         </h2>
         <p className="mt-2 text-center text-sm text-gray-600">
-          {t('joinUsDescription', { ns: 'auth' })}
+          {tPage('subtitle')}
         </p>
       </div>
 
@@ -44,7 +45,7 @@ export const RegisterPage: React.FC = () => {
               </div>
               <div className="relative flex justify-center text-sm">
                 <span className="px-2 bg-white text-gray-500">
-                  {t('alreadyHaveAccount', { ns: 'auth' })}
+                  {tPage('alreadyHaveAccount')}
                 </span>
               </div>
             </div>
@@ -54,7 +55,7 @@ export const RegisterPage: React.FC = () => {
                 to="/"
                 className="font-medium text-blue-600 hover:text-blue-500 hover:underline"
               >
-                {t('signIn', { ns: 'common' })}
+                {tCommon('signIn')}
               </Link>
             </div>
           </div>

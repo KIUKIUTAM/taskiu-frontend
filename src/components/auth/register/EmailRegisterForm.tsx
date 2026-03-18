@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
+import type { ControllerRenderProps, ControllerFieldState } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useTranslation, Trans } from 'react-i18next';
@@ -7,9 +8,11 @@ import type { TFunction } from 'i18next';
 import { Turnstile } from '@marsidev/react-turnstile';
 import { Link, useNavigate } from 'react-router-dom';
 import { useEmailRegister } from '@/hooks/auth/useEmailRegister';
-import { TURNSTILE_SITE_KEY } from '@/config/TurnstileProperty'
+import { TURNSTILE_SITE_KEY } from '@/config/TurnstileProperty';
 
 import { Form, Input, Button, Checkbox, Modal, Result, message, theme } from 'antd';
+
+// ─── Schema ────────────────────────────────────────────────────────────────────
 
 const createRegisterSchema = (t: TFunction) => {
   return z
@@ -32,11 +35,98 @@ const createRegisterSchema = (t: TFunction) => {
 
 type RegisterFormValues = z.infer<ReturnType<typeof createRegisterSchema>>;
 
+// ─── Email Field ────────────────────────────────────────────────────────────────
+
+interface EmailFieldProps {
+  field: ControllerRenderProps<RegisterFormValues, 'email'>;
+  fieldState: ControllerFieldState;
+  submitCount: number;
+  label: string;
+  disabled: boolean;
+}
+
+const EmailField: React.FC<EmailFieldProps> = ({
+  field,
+  fieldState: { error, isTouched },
+  submitCount,
+  label,
+  disabled,
+}) => {
+  const hasTypedRef = useRef(false);
+
+  if (field.value) {
+    hasTypedRef.current = true;
+  }
+
+  const showError = !!error && (
+    (hasTypedRef.current && isTouched) || submitCount > 0
+  );
+
+  return (
+    <Form.Item
+      label={label}
+      validateStatus={showError ? 'error' : ''}
+      help={showError ? error?.message : ''}
+    >
+      <Input
+        {...field}
+        size="large"
+        placeholder="you@example.com"
+        disabled={disabled}
+      />
+    </Form.Item>
+  );
+};
+
+// ─── Password Field ─────────────────────────────────────────────────────────────
+
+interface PasswordFieldProps {
+  field: ControllerRenderProps<RegisterFormValues, 'password' | 'confirmPassword'>;
+  fieldState: ControllerFieldState;
+  submitCount: number;
+  label: string;
+  disabled: boolean;
+}
+
+const PasswordField: React.FC<PasswordFieldProps> = ({
+  field,
+  fieldState: { error, isTouched },
+  submitCount,
+  label,
+  disabled,
+}) => {
+  const hasTypedRef = useRef(false);
+
+  if (field.value) {
+    hasTypedRef.current = true;
+  }
+
+  const showError = !!error && (
+    (hasTypedRef.current && isTouched) || submitCount > 0
+  );
+
+  return (
+    <Form.Item
+      label={label}
+      validateStatus={showError ? 'error' : ''}
+      help={showError ? error?.message : ''}
+    >
+      <Input.Password
+        {...field}
+        size="large"
+        placeholder="••••••••"
+        disabled={disabled}
+      />
+    </Form.Item>
+  );
+};
+
+// ─── Main Form ──────────────────────────────────────────────────────────────────
+
 export const EmailRegisterForm: React.FC = () => {
   const { t } = useTranslation(['auth', 'common']);
   const navigate = useNavigate();
   const [token, setToken] = useState<string | null>(null);
-
 
   const { token: themeToken } = theme.useToken();
   const { login: emailRegister, isLoading: isEmailLoading, isSuccess } = useEmailRegister();
@@ -56,16 +146,12 @@ export const EmailRegisterForm: React.FC = () => {
     mode: 'onBlur',
   });
 
-  const onEmailRegister = (data: RegisterFormValues, humanVerifyToken: string) => {
-    emailRegister({ email: data.email, password: data.password, humanVerifyToken });
-  };
-
   const onSubmit = (data: RegisterFormValues) => {
     if (!token) {
       message.error(t('pleaseWaitForVerification', { ns: 'toast' }));
       return;
     }
-    onEmailRegister(data, token);
+    emailRegister({ email: data.email, password: data.password, humanVerifyToken: token });
   };
 
   useEffect(() => {
@@ -80,6 +166,7 @@ export const EmailRegisterForm: React.FC = () => {
   };
 
   const isButtonDisabled = isSubmitting || isEmailLoading || !token || !isValid;
+  const fieldDisabled = isSubmitting || isEmailLoading || isSuccess;
 
   return (
     <>
@@ -89,76 +176,49 @@ export const EmailRegisterForm: React.FC = () => {
         className="w-full"
         requiredMark={false}
       >
-        {/* Email Field - Move Form.Item inside Controller */}
+        {/* Email */}
         <Controller
           name="email"
           control={control}
-          render={({ field, fieldState: { error } }) => {
-            const showError = !!error && (!!field.value || submitCount > 0);
-
-            return (
-              <Form.Item
-                label={t('emailAddress', { ns: 'common' })}
-                validateStatus={showError ? 'error' : ''}
-                help={showError ? error?.message : ''}
-              >
-                <Input
-                  {...field}
-                  size="large"
-                  placeholder="you@example.com"
-                  disabled={isSubmitting || isEmailLoading || isSuccess}
-                />
-              </Form.Item>
-            );
-          }}
+          render={({ field, fieldState }) => (
+            <EmailField
+              field={field}
+              fieldState={fieldState}
+              submitCount={submitCount}
+              label={t('emailAddress', { ns: 'common' })}
+              disabled={fieldDisabled}
+            />
+          )}
         />
 
-        {/* Password Field */}
+        {/* Password */}
         <Controller
           name="password"
           control={control}
-          render={({ field, fieldState: { error } }) => {
-            const showError = !!error && (!!field.value || submitCount > 0);
-
-            return (
-              <Form.Item
-                label={t('password', { ns: 'common' })}
-                validateStatus={showError ? 'error' : ''}
-                help={showError ? error?.message : ''}
-              >
-                <Input.Password
-                  {...field}
-                  size="large"
-                  placeholder="••••••••"
-                  disabled={isSubmitting || isEmailLoading || isSuccess}
-                />
-              </Form.Item>
-            );
-          }}
+          render={({ field, fieldState }) => (
+            <PasswordField
+              field={field as ControllerRenderProps<RegisterFormValues, 'password' | 'confirmPassword'>}
+              fieldState={fieldState}
+              submitCount={submitCount}
+              label={t('password', { ns: 'common' })}
+              disabled={fieldDisabled}
+            />
+          )}
         />
 
-        {/* Confirm Password Field */}
+        {/* Confirm Password */}
         <Controller
           name="confirmPassword"
           control={control}
-          render={({ field, fieldState: { error } }) => {
-            const showError = !!error && (!!field.value || submitCount > 0);
-
-            return (
-              <Form.Item
-                label={t('confirmPassword', { ns: 'auth' })}
-                validateStatus={showError ? 'error' : ''}
-                help={showError ? error?.message : ''}
-              >
-                <Input.Password
-                  {...field}
-                  size="large"
-                  placeholder="••••••••"
-                  disabled={isSubmitting || isEmailLoading || isSuccess}
-                />
-              </Form.Item>
-            );
-          }}
+          render={({ field, fieldState }) => (
+            <PasswordField
+              field={field as ControllerRenderProps<RegisterFormValues, 'password' | 'confirmPassword'>}
+              fieldState={fieldState}
+              submitCount={submitCount}
+              label={t('confirmPassword', { ns: 'auth' })}
+              disabled={fieldDisabled}
+            />
+          )}
         />
 
         {/* Terms of Service */}
@@ -186,7 +246,7 @@ export const EmailRegisterForm: React.FC = () => {
           </div>
         </Form.Item>
 
-        {/* Turnstile component */}
+        {/* Turnstile */}
         <div className="my-4">
           {!isSuccess && (
             <Turnstile
@@ -199,7 +259,7 @@ export const EmailRegisterForm: React.FC = () => {
           )}
         </div>
 
-        {/* Submit button */}
+        {/* Submit */}
         <Form.Item className="mb-0">
           <Button
             type="primary"

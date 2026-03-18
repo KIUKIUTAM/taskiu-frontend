@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Mail, ArrowRight, CheckCircle2, Send } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate, Link } from 'react-router-dom';
-import { Button, Card, ConfigProvider, Typography, Input, theme, GetProps } from 'antd';
+import { useNavigate } from 'react-router-dom';
+import { Button, Card, ConfigProvider, Typography, Input, GetProps } from 'antd';
+import message from 'antd/es/message';
 
 // Assume hook paths are unchanged
 import { useEmailSend } from '@/hooks/auth/useEmailSend';
@@ -15,21 +16,19 @@ const { Title, Text } = Typography;
 type OTPProps = GetProps<typeof Input.OTP>;
 
 const EmailVerification = () => {
-  const { t } = useTranslation(['common', 'auth']);
+  const { t: tPage } = useTranslation('page.workplace.emailVerification');
+  const { t: tToast } = useTranslation('toast');
   const navigate = useNavigate();
-
-  // Use Antd token to get current theme variables (if needed)
-  const { token } = theme.useToken();
 
   // State management: only need one string now, no array
   const [otpValue, setOtpValue] = useState<string>('');
   const [timer, setTimer] = useState(0);
 
-  const { data: user } = useAuth();
+  const { data: user, refetch: refetchUser, isFetching: isUserFetching } = useAuth();
   const { sendVerifyEmail, isSending } = useEmailSend();
   const { verifyEmail, isVerifying, isVerifySuccess } = useEmailVerify();
 
-  const showSuccessUI = isVerifySuccess || (user?.verified && isVerifySuccess);
+  const showSuccessUI = isVerifySuccess || !!user?.verified;
 
   // Navigation logic
   useEffect(() => {
@@ -64,6 +63,15 @@ const EmailVerification = () => {
     }
   };
 
+  const handleGoToDashboard = async () => {
+    const result = await refetchUser();
+    if (result.data?.verified) {
+      navigate('/dashboard', { replace: true });
+      return;
+    }
+    message.info(tToast('pleaseWaitForVerification'));
+  };
+
   // Antd Input.OTP onChange event
   const handleOtpChange: OTPProps['onChange'] = (text) => {
     setOtpValue(text);
@@ -77,7 +85,7 @@ const EmailVerification = () => {
     return (
       <div className="flex items-center gap-2">
         <Send size={14} />
-        <span>{t('resend', { ns: 'auth' })}</span>
+        <span>{tPage('resend')}</span>
       </div>
     );
   };
@@ -111,17 +119,16 @@ const EmailVerification = () => {
 
             <Title level={2} style={{ marginBottom: '0.5rem', fontWeight: 'bold' }}>
               {showSuccessUI
-                ? t('verifysuccess', { ns: 'auth' })
-                : t('verifyEmail', { ns: 'auth' })}
+                ? tPage('titleSuccess')
+                : tPage('titleVerify')}
             </Title>
 
             <Text type="secondary">
               {showSuccessUI
-                ? t('youCanNowCloseThisPageOrContinue', { ns: 'auth' })
-                : t('weHaveSentA6DigitVerificationCode', {
-                  email: user?.email || 'your email',
-                  ns: 'auth',
-                })}
+                ? tPage('subtitleSuccess')
+                : tPage('subtitleSentCode', {
+                    email: user?.email || 'your email',
+                  })}
             </Text>
           </div>
 
@@ -136,9 +143,10 @@ const EmailVerification = () => {
                   backgroundColor: '#111827',
                   borderColor: '#111827',
                 }}
-                onClick={() => navigate('/dashboard', { replace: true })}
+                onClick={handleGoToDashboard}
+                loading={isUserFetching}
               >
-                {t('goToDashboard', { ns: 'auth' })}
+                {tPage('goToDashboard')}
               </Button>
             </div>
           ) : (
@@ -166,13 +174,13 @@ const EmailVerification = () => {
                 icon={!isVerifying && <ArrowRight size={18} />}
                 iconPlacement="end"
               >
-                {t('verify', { ns: 'auth' })}
+                {tPage('verify')}
               </Button>
 
               {/* Resend Section */}
               <div className="flex items-center justify-between bg-gray-50 p-4 rounded-xl border border-gray-100">
                 <span className="text-sm text-gray-500 font-medium">
-                  {t('didNotReceiveVerificationCode', { ns: 'auth' })}
+                  {tPage('didNotReceive')}
                 </span>
 
                 <Button
