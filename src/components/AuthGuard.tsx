@@ -1,6 +1,5 @@
 import { useLocation, Navigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/auth/useAuth';
-import { Loader2 } from 'lucide-react';
 
 export const AuthGuard = ({ children }: { children: React.ReactNode }) => {
   const location = useLocation();
@@ -19,8 +18,7 @@ export const AuthGuard = ({ children }: { children: React.ReactNode }) => {
     console.log('[AuthGuard] → LOADING');
     return (
       <div className="flex h-screen items-center justify-center">
-        <Loader2 className="animate-spin" />
-        <span className="ml-2">Loading user data...</span>
+        <span className="ml-2">pleace wait...</span>
       </div>
     );
   }

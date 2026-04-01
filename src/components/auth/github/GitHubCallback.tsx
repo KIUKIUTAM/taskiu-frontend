@@ -23,3 +23,4 @@ export const GitHubCallbackPage = () => {
         <p className="text-gray-600 font-medium">{t('loginSuccess')}</p>
       </div>);
 };
+export default GitHubCallbackPage;

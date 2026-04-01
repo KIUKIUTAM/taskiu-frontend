@@ -9,7 +9,7 @@ import queryClient from '@/config/queryClient';
 import { App as AntdApp } from 'antd';
 
 const router = createBrowserRouter(routes, {
-  basename: "/taskiu"
+  basename: "/taskiu/"
 });
 
 

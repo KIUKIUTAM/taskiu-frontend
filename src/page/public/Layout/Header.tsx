@@ -4,7 +4,8 @@ import { useTranslation } from 'react-i18next';
 
 // Ant Design Imports
 import { Button, ConfigProvider, theme } from 'antd';
-import { MenuOutlined, CloseOutlined } from '@ant-design/icons';
+import MenuOutlined from '@ant-design/icons/MenuOutlined'
+import CloseOutlined from '@ant-design/icons/CloseOutlined'
 
 // Hooks & Components
 import LoginModal from '@/components/auth/LoginModal';
@@ -91,7 +92,7 @@ const Header: React.FC = () => {
                 <div className="flex items-center gap-2">
                   <span
                     className="text-2xl md:text-3xl font-bold text-blue-950 filter drop-shadow-lg"
-                    onClick={() => navigate('/')}
+                    onClick={() => navigate('')}
                   >
                     TasKiu
                   </span>

@@ -12,6 +12,8 @@ export default i18n
     debug: false,
     defaultNS: 'common',
     fallbackNS: 'common',
+    preload: ['en', 'zh'],
+    ns: ['common', 'auth'],
     interpolation: {
       escapeValue: false,
     },

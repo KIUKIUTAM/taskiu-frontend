@@ -1,62 +1,91 @@
-import { lazy, Suspense } from 'react';
-import { Loader } from 'lucide-react';
-import Welcome from '@/page/public/Welcome/index';
-import Layout from '@/page/public/Layout/index';
-import About from '@/page/public/About/index';
-import Services from '@/page/public/Services/index';
-import Contact from '@/page/public/Contact/index';
-import { RegisterPage } from '@/page/stateless/Register/index';
+import React, { lazy, Suspense } from 'react';
+import { useTranslation } from 'react-i18next';
 
-import StateLessLayout from '@/page/stateless/Layout/index';
-import DashLayout from '@/page/workplace/Layout/index';
+// ----------------------------------------------------------------------
+// 1. 靜態引入 (Static Imports)
+// Layout、Guard 和 NotFound 建議保持靜態引入，避免畫面閃爍或 Layout Shift
+// ----------------------------------------------------------------------
+const StateLessLayout = lazy(() => import('@/page/stateless/Layout/index'));
+const DashLayout = lazy(() => import('@/page/workplace/Layout/index'));
+import { AuthGuard } from '@/components/AuthGuard';
+import NotFound from '@/page/public/NotFound/index';
+
+// 假設你的特效 Loading 元件放在這裡 (請替換成你實際的路徑)
+import LoadingPage from '@/page/public/Loading'; 
+import Layout from '@/page/public/Layout/index'; 
+// ----------------------------------------------------------------------
+// 2. 工具函數：強制延遲的 Lazy (專門給 Welcome 用)
+// ----------------------------------------------------------------------
+const lazyWithDelay = (importFunc: () => Promise<any>, minDelay: number = 2500) => {
+  return lazy(() => Promise.all([
+    importFunc(),
+    new Promise(resolve => setTimeout(resolve, minDelay))
+  ]).then(([moduleExports]) => moduleExports));
+};
+
+// ----------------------------------------------------------------------
+// 3. Lazy Imports
+// ----------------------------------------------------------------------
+
+// 【特別處理】：只有 Welcome 頁面會強制等待 2.5 秒，展示特效
+const Welcome = lazyWithDelay(() => import('@/page/public/Welcome/index'), 1000);
+
+const About = lazy(() => import('@/page/public/About/index'));
+const Services = lazy(() => import('@/page/public/Services/index'));
+const Contact = lazy(() => import('@/page/public/Contact/index'));
+const TermsPage = lazy(() => import('@/page/public/terms/index'));
+const RegisterPage = lazy(() => import('@/page/stateless/Register/index'));
+const TaskDetailPage = lazy(() => import('@/page/workplace/task'));
+
 const EmailVerification = lazy(() => import('@/page/workplace/EmailVerification/index'));
 const DashboardHome = lazy(() => import('@/page/workplace/Home/index'));
 const MissionsPage = lazy(() => import('@/page/workplace/Missions/index'));
 const TeamPage = lazy(() => import('@/page/workplace/Team/index'));
 const TeamDetailPage = lazy(() => import('@/page/workplace/TeamDetail/index'));
-const TermsPage = lazy(() => import('@/page/public/terms/index'));
-import NotFound from '@/page/public/NotFound/index';
 
-import Test from '@/page/Test/index.jsx';
-import TodoList from '@/page/Test/tailwindcss';
-import { GoogleCallbackPage } from '@/components/auth/google/GoogleCallback';
-import { GitHubCallbackPage } from '@/components/auth/github/GitHubCallback';
-import { AuthGuard } from '@/components/AuthGuard';
-import TaskDetailPage from '@/page/workplace/task';
-import { useTranslation } from 'react-i18next';
+const Test = lazy(() => import('@/page/Test/index.jsx'));
+const TodoList = lazy(() => import('@/page/Test/tailwindcss'));
+const GoogleCallbackPage = lazy(() => import('@/components/auth/google/GoogleCallback'));
+const GitHubCallbackPage = lazy(() => import('@/components/auth/github/GitHubCallback'));
 
-const PageLoader = () => {
-  const { t } = useTranslation();
-  return (
-    <div className="flex h-screen items-center justify-center">
-      <Loader className="animate-spin w-8 h-8 text-gray-600" />
-      <div className="text-xl">{t('loading')}...</div>
-    </div>
-  );
-};
+// ----------------------------------------------------------------------
+// 4. Loading 元件與包裝工具
+// ----------------------------------------------------------------------
+
+
+
+const withSuspense = (Component: React.LazyExoticComponent<any>, Fallback: React.ReactNode = <LoadingPage />) => (
+  <Suspense fallback={Fallback}>
+    <Component />
+  </Suspense>
+);
+
+// ----------------------------------------------------------------------
+// 5. Routes Configuration
+// ----------------------------------------------------------------------
 const routes = [
   {
-    element: <Layout />,
+    element:  <Layout/>,
     children: [
       {
-        path: '/',
-        element: <Welcome />,
+        index: true,
+        element: withSuspense(Welcome),
       },
       {
         path: 'about',
-        element: <About />,
+        element: withSuspense(About),
       },
       {
         path: 'services',
-        element: <Services />,
+        element: withSuspense(Services),
       },
       {
         path: 'contact',
-        element: <Contact />,
+        element: withSuspense(Contact),
       },
       {
         path: 'tasks',
-        element: <TaskDetailPage />,
+        element: withSuspense(TaskDetailPage),
       }
     ],
   },
@@ -65,15 +94,11 @@ const routes = [
     children: [
       {
         path: 'register',
-        element: <RegisterPage />,
+        element: withSuspense(RegisterPage),
       },
       {
         path: 'terms',
-        element: (
-          <Suspense fallback={<PageLoader />}>
-            <TermsPage />
-          </Suspense>
-        ),
+        element: withSuspense(TermsPage),
       },
     ],
   },
@@ -86,43 +111,23 @@ const routes = [
     children: [
       {
         path: 'dashboard',
-        element: (
-          <Suspense fallback={<PageLoader />}>
-            <DashboardHome />
-          </Suspense>
-        ),
+        element: withSuspense(DashboardHome),
       },
       {
         path: 'missions',
-        element: (
-          <Suspense fallback={<PageLoader />}>
-            <MissionsPage />
-          </Suspense>
-        ),
+        element: withSuspense(MissionsPage),
       },
       {
         path: 'team',
-        element: (
-          <Suspense fallback={<PageLoader />}>
-            <TeamPage />
-          </Suspense>
-        ),
+        element: withSuspense(TeamPage),
       },
       {
         path: 'team/:teamId',
-        element: (
-          <Suspense fallback={<PageLoader />}>
-            <TeamDetailPage />
-          </Suspense>
-        ),
+        element: withSuspense(TeamDetailPage),
       },
       {
         path: 'verify-email',
-        element: (
-          <Suspense fallback={<PageLoader />}>
-            <EmailVerification />
-          </Suspense>
-        ),
+        element: withSuspense(EmailVerification),
       },
     ],
   },
@@ -132,20 +137,24 @@ const routes = [
   },
   {
     path: 'test',
-    element: <Test />,
+    element: withSuspense(Test),
   },
   {
     path: 'auth/google-callback',
-    element: <GoogleCallbackPage />,
+    element: withSuspense(GoogleCallbackPage),
   },
   {
     path: 'auth/github-callback',
-    element: <GitHubCallbackPage />,
+    element: withSuspense(GitHubCallbackPage),
   },
   {
     path: 'todos',
-    element: <TodoList />,
+    element: withSuspense(TodoList),
   },
+  {
+    path: 'loading',
+    element: <LoadingPage/>
+  }
 ];
 
 export default routes;
